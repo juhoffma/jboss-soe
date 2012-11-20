@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<project name="soe" basedir=".">
+    <!-- rpm2cpio <rpm-package> | cpio -ivd <complete_path_and_destination>/standalone -->
+    <taskdef name="xmltask"
+             classname="com.oopsconsultancy.xmltask.ant.XmlTask"/>
+    <target name="xmltest">
+        <!-- Let us process the copied standalone.xml and insert the stuff from the configuration directories -->
+        <xmltask source="${basedir}/../jboss-eap6-master/standalone/configuration/standalone.xml">
+            <copy path="/" buffer="standalone-conf-buffer" />
+        </xmltask>
+
+        <xmltask sourcebuffer="standalone-conf-buffer" dest="${basedir}/standalone-parsed.xml">
+            <!-- <remove path="//*[contains(namespace-uri(), 'security') and local-name()='subsystem']"/>
+            <insert path="//*[local-name()='profile']" position="under" file="${basedir}/profiles/ACTIVITYMANAGER2/configuration/security/configuration.xml" /> -->
+            <replace path="//*[contains(namespace-uri(), 'security') and local-name()='subsystem']" withfile="${basedir}/profiles/ACTIVITYMANAGER2/configuration/security/configuration.xml" />
+        </xmltask>
+    </target>
+</project>

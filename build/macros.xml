@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<!-- Build file used to perform common configuration changes for all profiles -->
+<project name="macros">
+    <!-- Roll out release zip files using the native OS level zip command -->
+
+</project>

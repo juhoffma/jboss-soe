@@ -1,0 +1,212 @@
+Project EasyBashGUI.
+
+
+Intro.
+
+EasyBashGUI is a bash function library that aims to give simple GUI functions using kdialog, zenity, Xdialog or dialog, depending on KDE or GNOME running or not, Xdialog installed or not and X server running or not ( (c)dialog is the minimum ). So, if bash programmer write: "message 'Thanks for using this program' ", he has not to worry in wich environment his program runs: it is enough there is at least (c)dialog installed, and program will work as expected. Obviously, if user has KDE, GNOME, or Xdialog also installed ( and he's in a X session ), program will have "an other look", but logical flow is *exactly* the same.
+In EasyBashGUI "suite" there are library ( "easybashgui" ), a script to quick test it ( "easybashgui_test.sh" ), and a stand-alone script to create dialog boxes externally ( "easydialog.sh" ). 
+
+
+
+
+
+
+
+Library functions.
+
+message
+ok_message
+alert_message
+text
+question
+input
+menu
+list
+fselect (= "file select" )
+dselect (= "directory select" )
+wait_seconds
+wait_for
+terminate_wait_for
+progress
+adjust
+
+
+
+
+
+
+How to install and use.
+
+Extract all files...
+(e.g.: >tar -xzvf EasyBashGUI_X.X.X )
+
+Cd in ./EasyBashGUI source dir...
+(e.g.: >cd ./EasyBashGUI_X.X.X )
+
+Put "easybashgui_X.X.X", "Ok.xpm" and "Attenzione.xpm" in your path - Ok.xpm and Attenzione.xpm icons are used only in "Xdialog" mode - ...
+(e.g.: >cp ./easybashgui_X.X.X ./Ok.xpm ./Attenzione.xpm /usr/local/bin/ )
+
+Make sure easybashgui is executable...
+(e.g.: >chmod 755 /usr/local/bin/easybashgui_X.X.X )
+
+Link it...
+(e.g.: >ln -s /usr/local/bin/easybashgui_X.X.X /usr/local/bin/easybashgui )
+ 
+That's it !!!!!
+
+
+
+If you want use it in your scripts, source simply "easybashgui" ...
+(e.g.: "source easybashgui" )
+
+And don't forget to write "clean_temp" at the end of all your scripts... ;-)
+
+E.g.:
+-------------------
+#!/bin/bash
+source easybashgui
+#
+message "this"
+input 1 ( "that" )
+menu "this" "that"
+list +"you" -"me" +"her"
+...
+etc.etc.
+...
+clean_temp
+-------------------
+
+And... enjoy !! :-)
+
+
+
+
+
+
+
+Synopsis.
+
+question -> "[text]"                 =>       ( 1 argument, box output to exit code and STDERR ) (*)
+message -> "[text]"                  =>       ( 1 argument )
+alert_message -> "[text]"            =>       ( 1 argument )
+ok_message -> "[text]"               =>       ( 1 argument )
+text                                 =>       ( STDIN, NO argument, box output to "${dir_tmp}/${file_tmp}" and STDERR ) (^)
+wait_seconds -> "[integer]"          =>       ( 1 argument )
+wait_for -> "[text]"                 =>       ( 1 argument, PID to kill to "wait_for__PID" variable and STDERR ) (@)
+terminate_wait_for                   =>       ( 1 argument only in easydialog, otherwise, NO argument ) (@)
+fselect -> "<init. dir.>"            =>       ( 1 <optional> argument, box output to "${dir_tmp}/${file_tmp}" and STDERR ) (#)
+dselect -> "<init. dir.>"            =>       ( 1 <optional> argument, box output to "${dir_tmp}/${file_tmp}" and STDERR ) (#)
+input -> 1 "[init 1]"                =>       ( 2 arguments, box output to "${dir_tmp}/${file_tmp}" and STDERR )
+input -> 2 "[label 1]" "[init 1]" "[label 2]" "[init 2]"                     => ( 5 arguments, box output to "${dir_tmp}/${file_tmp}" and STDERR )
+input -> 3 "[label 1]" "[init 1]" "[label 2]" "[init 2]" "[label 3]" "[init 3]" => ( 7 arguments, box output to "${dir_tmp}/${file_tmp}" and STDERR )
+menu -> "[item 1]" ... "[item n]"    =>       ( [n] arguments, box output to "${dir_tmp}/${file_tmp}" and STDERR ) (%)
+list -> <+|->"[item 1]" ... <+|->"[item n]"    =>       ( [n] arguments, optionally prefixed by "+"(plus) or "-"(minus), box output to "${dir_tmp}/${file_tmp}" and STDERR ) (%)
+progress -> "[text]"                         =>       ( percent with or without '%' in STDIN, 1 argument )
+progress -> "[text]" "[elements number]"     =>       ( "PROGRESS" string in STDIN, 2 arguments )
+adjust -> "[text]" "[min]" "[init]" "[max]" => ( 4 arguments, box output to "${dir_tmp}/${file_tmp}" and STDERR )
+
+
+(*) = "0" exit status is "YES", "1" exit status is "NOT", other exit codes you should make program exit : normally in a script you have just to check exit status to know user choice ;
+(^) = text function write text in STDIN to file "${dir_tmp}/${file_tmp}" and (only) for kdialog, zenity, and Xdialog you can also edit text to write ;
+(@) = "wait_for" function create a window with a text and returns control to main program... after a job, you can close the window throught function "terminate_wait_for" ( needs no argument ) ;
+(#) = take care that if you are in "console mode" or without X, throught cdialog, selection is done by SPACE key, and NOT by enter key : remember it ;
+(%) = "menu" and "list" functions differ about choices: menu allows single choice, list allows multiple choice ;
+
+Since EasyBashGUI v.1.2.4, all windows functions support options "<-w|-width> [integer]", and "<-h|-height> [integer]" for custom window size:
+E.g.: >alert_message -w 400 -h 340 "Error!"
+
+
+
+Library examples:
+1)
+question "Do you like Contry music ?"
+answer="${?}"
+if [ ${answer} -eq 0 ]
+	then
+	ok_message "You do like it :)"
+elif [ ${answer} -eq 1 ]
+	then
+	alert_message "You don't like it :("
+else
+	ok_message "See you"
+	exit 0
+fi
+
+2)
+echo -e "What's your name?\n\nMy name's:\nVittorio" | text
+
+3)
+wait_for "I'm sleeping 4 seconds... good night..."
+sleep 4
+terminate_wait_for
+
+4)
+fselect
+file="$(0< "${dir_tmp}/${file_tmp}" )"
+
+5)
+input 1 "(write here IP address)"
+input 3 "Username" "root" "IP address" "192.168.0.1" "Destination directory" "/tmp"
+IFS=$'\n' ; choices=( $(0< "${dir_tmp}/${file_tmp}" ) ) ; IFS=$' \t\n'
+user="${choices[0]}"
+ip="${choices[1]}"
+dir="${choices[2]}"
+
+6)
+for i in 10 20 30 40 50 60 70 80 90 100
+	do
+	echo "${i}"
+	sleep 2
+done | progress "This is a test progress..."
+
+7)
+adjust "Please, set Volume level" 15 40 75
+
+8)
+women=( Angela Carla Michelle Noemi Urma Marisa Karina Anita Josephine Rachel )
+for (( index=0 ; index < ${#women[@]} ; index++ })) 
+	do
+	today_prefered_woman="${women[${index}]}"
+	kiss "${today_prefered_woman}"
+	sleep 1
+	#
+	# Job done !!
+	# then...
+	echo "PROGRESS"
+	#
+done | progress "This is a _LOVE_ progress..." "${#women[@]}"
+# if you use "PROGRESS" string in STDIN do not forget second argument ( "[elements number]" )
+
+( For easydialog.sh use and examples, you would launch it simply with "-h" option )
+
+
+
+
+
+
+
+Note on console mode.
+
+EasyBashGUI doesn't work with original "dialog" ( old one ) that is very limited; if you have first version "dialog" in your box, install "cdialog" and alias or link "dialog" to cdialog.
+
+
+
+
+
+
+
+Credits.
+
+I would thanks to cdialog, Xdialog, kdialog and zenity authors, this library was nothing without their work. Many thanks.
+For EasyBashGUI vers.: 1.2.4, thanks to "zazu" from "http://forum.spreamedia.it" for his suggestions.
+
+
+
+
+
+
+
+Please let me know if you think my work is useful.
+Vittorio Cagnetta
+vaisarger@gmail.com
+http://sites.google.com/site/easybashgui

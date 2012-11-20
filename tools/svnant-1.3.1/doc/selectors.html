@@ -1,0 +1,505 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title></title>
+<meta http-equiv="Content-Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="http://tortoisesvn.tigris.org/branding/css/print.css" media="print">
+<style type="text/css">
+        /*  */
+            @import "http://subclipse.tigris.org/branding/css/tigris.css";
+            @import "http://subclipse.tigris.org/branding/css/inst.css";
+        /*  */
+      </style>
+<style type="text/css">
+        table {
+          border: 1pt solid gray;
+          border-collapse: collapse;
+          width: 70%;
+        }
+        tr, td {
+          border: 1pt solid gray;
+        }
+        tr:hover {
+          background-color: rgb(93%,93%,93%);
+        }
+        td {
+          padding: 2pt;
+        }
+        tr {
+          width: 100%;
+        }
+        h1 {
+          font-size: 200%; text-transform: lowercase; letter-spacing: 3px;
+          margin-bottom: 1em; 
+          padding: 0.66em 0 0.33em 1em;
+          /* background: rgb(85%,85%,70%); */
+        }
+        h2 {
+          background: rgb(85%,85%,70%);
+          margin-bottom: 1em; 
+        }
+        h3 {
+          margin-bottom: 1em; 
+          border:1px solid rgb(85%,85%,70%);
+          color: rgb(55%,55%,40%);
+          padding: 0.66em 0 0.33em 1em;
+          background-color: #f3f1f4;
+        }
+        .sample {
+          font-family: Courier, "Courier New", monospace;
+          background-color: #f3f1f4;
+          margin-left: 10px;
+          margin-right: 10px;
+          padding-top: 3px;
+          padding-bottom: 3px;
+          padding-left: 3px;
+          padding-right: 3px;
+          border:1px dashed black;
+          width: 65%;
+        }
+        .firstcol {
+          width: 15em;
+          max-width: 15em;
+        }
+        .lastcol {
+          width: 6em;
+          max-width: 6em;
+        }
+        p.remark {
+          margin-left: 2em;
+          padding-left: 1em;
+          padding-top: 2pt;
+          padding-bottom: 2pt;
+          padding-right: 2pt;
+          border-style: solid;
+          border-color: red;
+          border-left-width: 4em;
+          border-top-width: 1pt;
+          border-right-width: 1pt;
+          border-bottom-width: 1pt;
+        }
+        table.attributes {
+          margin-bottom: 2em;
+        } 
+        table.nestedelements tr td.firstcol {
+          text-style: bold;
+          width: 10em;
+        }
+        tr.invisiblerow {
+          border: 0pt solid black;
+          padding-top: 3pt;
+          padding-bottom: 3pt;
+        }
+      </style>
+</head>
+<body lang="en-US" dir="ltr">
+<div class="h2" title="Description">
+<h2>Description</h2>
+    
+    
+<p>This document describes the file selectors offered in svnAnt. All selectors share
+    the same attributes listed below:</p>
+    
+  
+</div>
+<div class="h2" title="Parameters">
+<a style="visibility: hidden;" name="parameters"></a>
+<h2>Parameters</h2>
+  
+    
+<p>The following list of attributes is shared among all selector implementations:</p>
+      
+    
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">username</td><td>
+<p>username that will be used for all nested svn commands.<b>Deprecated. This attribute won't work with SVNANT 1.3.2+ . Use refid for svnSetting instead.</b>
+</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">password</td><td>
+<p>password that will be used for all nested svn commands.<b>Deprecated. This attribute won't work with SVNANT 1.3.2+ . Use refid for svnSetting instead.</b>
+</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">javahl</td><td>
+<p>Set to "false" to use command line client interface instead of JNI JavaHL binding.<b>Deprecated. This attribute won't work with SVNANT 1.3.2+ . Use refid for svnSetting instead.</b>
+</p>
+<br>
+        Default: true</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">svnkit</td><td>
+<p>Set to "false" to use command line client interface instead of SVNKit binding.<b>Deprecated. This attribute won't work with SVNANT 1.3.2+ . Use refid for svnSetting instead.</b>
+</p>
+<br>
+        Default: false</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">failonerror</td><td>
+<p>Controls whether an error stops the build or is merely reported to the screen.<b>Deprecated. This attribute won't work with SVNANT 1.3.2+ . Use refid for svnSetting instead.</b>
+</p>
+<br>
+        Default: true</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">refid</td><td>
+<p>If set the configuration for this task is taken from a svnSetting object. Such a settings instance simply provides default values, so they will be overridden in case the corresponding attribute on this task has been set.</p>
+</td><td class="lastcol">No</td>
+</tr>
+</table>
+
+  
+</div>
+<div class="h2" title="Supported selector types">
+<h2>Supported selector types</h2>
+<table>
+<tr>
+<td><a href="#svnadded">svnAdded</a></td><td><a href="#svnconflicted">svnConflicted</a></td><td><a href="#svndeleted">svnDeleted</a></td><td><a href="#svnignored">svnIgnored</a></td><td><a href="#svnlocked">svnLocked</a></td>
+</tr>
+<tr>
+<td><a href="#svnmissing">svnMissing</a></td><td><a href="#svnmodified">svnModified</a></td><td><a href="#svnnormal">svnNormal</a></td><td><a href="#svnreplaced">svnReplaced</a></td><td><a href="#svnunversioned">svnUnversioned</a></td>
+</tr>
+</table>
+  
+    
+<div class="h3" title="svnAdded">
+<a style="visibility: hidden;" name="svnadded"></a>
+<h3>svnAdded</h3>
+
+  
+<p>This file selector is used to discriminate files within a fileset based on a Subversion 
+  status. In particular, this selector keeps files that are recognized as 'added'.</p>
+  
+  
+<p>An 'added' file or directory is one that has been added to the repository, but not 
+  yet commited. In general, <code>svn status</code> displays those items with the letter 
+  <code>A</code> preceeding the name.</p>
+  
+  
+<p>Example:</p>
+  
+<p>to copy a number of files with the status 'added' from their location in workingcopy 
+  to a new directory called test, the following ant task can be used:</p>
+  
+  
+<pre class="sample">
+    &lt;copy todir="test"&gt;
+        &lt;fileset dir="workingcopy"&gt;
+            &lt;svnAdded/&gt;
+        &lt;/fileset&gt;
+    &lt;/copy&gt;
+  </pre>
+
+
+</div>
+    
+<div class="h3" title="svnConflicted">
+<a style="visibility: hidden;" name="svnconflicted"></a>
+<h3>svnConflicted</h3>
+
+  
+<p>This file selector is used to discriminate files within a fileset based on a Subversion 
+  status. In particular, this selector keeps files that are recognized as 'conflicted'.</p>
+  
+  
+<p>When updating a subversion item (file or directory), it is possible to have two sets of 
+  changes merged into the working item. This happens when the item was modified locally as 
+  well as remotely during the period since the last update. If the two sets of changes conflict 
+  (same lines of a file changes, same directory entries modified), then the item is marked as 
+  'conflicted'. In general, <b>svn status</b> displays 'conflicted' items with the letter C preceeding 
+  the name. Note that 'conflicted' items are also considered 'modified'.</p>
+  
+  
+<p>Example:</p>
+  
+<p>to copy a number of files with the status 'conflicted' from their location in <b>workingcopy</b> 
+  to a new directory called <b>test</b>, the following ant task can be used:</p>
+  
+  
+<pre class="sample">
+    &lt;copy todir="test"&gt;
+        &lt;fileset dir="workingcopy"&gt;
+            &lt;svnConflicted/&gt;
+        &lt;/fileset&gt;
+    &lt;/copy&gt;
+  </pre>
+
+
+</div>
+    
+<div class="h3" title="svnDeleted">
+<a style="visibility: hidden;" name="svndeleted"></a>
+<h3>svnDeleted</h3>
+
+  
+<p>This file selector is used to discriminate files within a fileset based on a Subversion 
+  status. In particular, this selector keeps files that are recognized as 'deleted'.</p>
+  
+  
+<p>A 'deleted' file or directory is one that has been erased using Subversion's 'remove' 
+  command. In general, <code>svn status</code> displays those items with the letter 
+  <code>D</code> preceeding the name.</p>
+  
+  
+<p>It is important to note that a regular FileSet (the one supplied by ANT) can not detect 
+  a deleted item, since it does not exist on the file system. To detect Subversion deleted 
+  items, use the FileSet provided by svn-ant (svnFileSet).</p>
+  
+  
+<p>Example:</p>
+  
+<p>to revert deleted files from a <b>workingcopy</b>:</p>
+  
+  
+<pre class="sample">
+    &lt;svn&gt;
+        &lt;revert&gt;
+            &lt;svnFileSet dir="workingcopy"&gt;
+                &lt;svnDeleted/&gt;
+            &lt;/svnFileSet&gt;
+        &lt;/revert&gt;
+    &lt;/svn&gt;
+  </pre>
+  
+
+</div>
+    
+<div class="h3" title="svnIgnored">
+<a style="visibility: hidden;" name="svnignored"></a>
+<h3>svnIgnored</h3>
+
+  
+<p>This file selector is used to discriminate files within a fileset based on a 
+  Subversion status. In particular, this selector keeps files that are recognized as 'ignored'.</p>
+
+  
+<p>An 'ignored' file or directory is one which name match the patterns found in the parent 
+  directory's <b>svn:ignore</b> property. In general, <b>svn status --no-ignore</b> display 
+  those items with the letter I preceeding the name.</p>
+
+  
+<p>Example:</p>
+  
+<p>to copy a number of files with the status 'ignored' from their location in <b>workingcopy</b>
+  to a new directory called <b>test</b>, the following ant task can be used:</p>
+
+  
+<pre class="sample">
+    &lt;copy todir="test"&gt;
+        &lt;fileset dir="workingcopy"&gt;
+            &lt;svnIgnored/&gt;
+        &lt;/fileset&gt;
+    &lt;/copy&gt;
+  </pre>
+
+
+</div>
+    
+<div class="h3" title="svnLocked">
+<a style="visibility: hidden;" name="svnlocked"></a>
+<h3>svnLocked</h3>
+
+  
+<p>This file selector is used to discriminate files within a <b>fileset</b> based on a 
+  Subversion status. In particular, this selector keeps files that are recognized as 'locked'.</p>
+
+  
+<p>A 'locked' file or directory is one where the repository has been informed of the intent 
+  of a user to prevent others from modifying the file. For a working copy to be aware of 
+  this fact, it must have been 'updated' since the lock status was changed. In general, 
+  <b>svn status</b> displays those items with one of the letters <code>K</code>, <code>O</code> or 
+  <code>B</code> in the sixth column. The 'lock' status is independent of most other conditions 
+  such as 'modified', 'conflicted', etc.</p>
+
+  
+<p>Example:</p>
+  
+<p>to copy a number of files with the status 'locked' from their location in <b>workingcopy</b> 
+  to a new directory called <b>test</b>, the following ant task can be used:</p>
+
+  
+<pre class="sample">
+    &lt;copy todir="test"&gt;
+        &lt;fileset dir="workingcopy"&gt;
+            &lt;svnLocked/&gt;
+        &lt;/fileset&gt;
+    &lt;/copy&gt;
+  </pre>
+  
+
+</div>
+    
+<div class="h3" title="svnMissing">
+<a style="visibility: hidden;" name="svnmissing"></a>
+<h3>svnMissing</h3>
+
+  
+<p>This file selector is used to discriminate files within a fileset based on a Subversion 
+  status. In particular, this selector keeps files that are recognized as 'missing'.</p>
+
+  
+<p>A 'missing' file or directory is one that is managed by Subversion and has been deleted 
+  without using the remove command. In general, <b>svn status</b> displays those items with the 
+  exclamation point (!) preceeding the name.</p>
+
+  
+<p>It is important to note that a regular FileSet (the one supplied by ANT) can not detect a 
+  missing item, since it does not exist on the file system. To detect Subversion missing items, 
+  use the FileSet provided by svn-ant (svnFileSet).</p>
+
+  
+<p>Example:</p>
+  
+<p>to delete missing files from the repository associated with a workingcopy:</p>
+  
+  
+<pre class="sample">
+    &lt;svn&gt;
+        &lt;delete&gt;
+            &lt;svnFileSet dir="workingcopy"&gt;
+                &lt;svnMissing/&gt;
+            &lt;/svnFileSet&gt;
+        &lt;/delete&gt;
+    &lt;/svn&gt;
+  </pre> 
+  
+
+</div>
+    
+<div class="h3" title="svnModified">
+<a style="visibility: hidden;" name="svnmodified"></a>
+<h3>svnModified</h3>
+
+  
+<p>This file selector is used to discriminate files within a fileset based on a Subversion 
+  status. In particular, this selector keeps files that are recognized as 'modified'.</p>
+
+  
+<p>A 'modified' file or directory is one that has been changed since the last update and 
+  where the changes have not yet been commited to the repository. In general, <b>svn status</b> 
+  display those items with the letter M preceeding the name. It is important to note that other 
+  items can also be considered modified, such as conflicted ones.</p>
+
+  
+<p>Example:</p>
+  
+<p>to copy a number of files with the status 'modified' from their location in <b>workingcopy</b> 
+  to a new directory called <b>test</b>, the following ant task can be used:</p>
+
+  
+<pre class="sample">
+    &lt;copy todir="test"&gt;
+        &lt;fileset dir="workingcopy"&gt;
+            &lt;svnModified/&gt;
+        &lt;/fileset&gt;
+    &lt;/copy&gt;
+  </pre>
+  
+
+</div>
+    
+<div class="h3" title="svnNormal">
+<a style="visibility: hidden;" name="svnnormal"></a>
+<h3>svnNormal</h3>
+
+  
+<p>This file selector is used to discriminate files within a fileset based on a Subversion 
+  status. In particular, this selector keeps files that are recognized as 'normal'.</p>
+
+  
+<p>A 'normal' file or directory is one that has not undergone any changes since the last 
+  update. In general, this is the great majority of the files in a working copy. <b>svn status</b> 
+  returns no special character for those items (a space in the first column).</p>
+
+  
+<p>Example:</p>
+  
+<p>to copy a number of files with the status 'normal' from their location in <b>workingcopy</b> 
+  to a new directory called <b>test</b>, the following ant task can be used:</p>
+
+  
+<pre class="sample">
+    &lt;copy todir="test"&gt;
+        &lt;fileset dir="workingcopy"&gt;
+            &lt;svnNormal/&gt;
+        &lt;/fileset&gt;
+    &lt;/copy&gt;
+  </pre>
+  
+
+</div>
+    
+<div class="h3" title="svnReplaced">
+<a style="visibility: hidden;" name="svnreplaced"></a>
+<h3>svnReplaced</h3>
+
+  
+<p>This file selector is used to discriminate files within a fileset based on a 
+  Subversion status. In particular, this selector keeps files that are recognized 
+  as 'replaced'.</p>
+
+  
+<p>A 'replaced' file or directory is one that has been deleted, then created anew and finally 
+  added back to the repository. Also, those changes must not have been comitted. In general, 
+  <b>svn status</b> displays those items with the letter R preceeding the name.</p>
+
+  
+<p>Example:</p>
+  
+<p>to copy a number of files with the status 'replaced' from their location in <b>workingcopy</b> 
+  to a new directory called <b>test</b>, the following ant task can be used:</p>
+  
+  
+<pre class="sample">
+    &lt;copy todir="test"&gt;
+        &lt;fileset dir="workingcopy"&gt;
+            &lt;svnReplaced/&gt;
+        &lt;/fileset&gt;
+    &lt;/copy&gt;
+  </pre>
+  
+
+</div>
+    
+<div class="h3" title="svnUnversioned">
+<a style="visibility: hidden;" name="svnunversioned"></a>
+<h3>svnUnversioned</h3>
+
+  
+<p>This file selector is used to discriminate files within a fileset based on a Subversion 
+  status. In particular, this selector keeps files that are recognized as 'unversioned'.</p>
+  
+  
+<p>An 'unversioned' file or directory is one that is present in a working copy but is not 
+  yet known to the repository. In general, <b>svn status</b> display those items with a question 
+  mark (?) preceeding the name. Note that 'ignored' items are not considered 'unversioned'.</p>
+  
+  
+<p>Example:</p>
+  
+<p>to copy a number of files with the status 'unversioned' from their location in <b>workingcopy</b>
+  to a new directory called <b>test</b>, the following ant task can be used:</p>
+  
+  
+<pre class="sample">
+    &lt;copy todir="test"&gt;
+        &lt;fileset dir="workingcopy"&gt;
+            &lt;svnUnversioned/&gt;
+        &lt;/fileset&gt;
+    &lt;/copy&gt;
+  </pre>
+  
+
+</div>
+
+  
+</div>
+</body>
+</html>

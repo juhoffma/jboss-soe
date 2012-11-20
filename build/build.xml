@@ -1,0 +1,360 @@
+<?xml version="1.0"?>
+
+<project name="soe" basedir=".">
+
+    <!-- Initial base properties are in build.properties -->
+    <property file="${basedir}/build.properties"/>
+
+    <fail message="You need to define the build.root property" unless="build.root"/>
+
+    <property name="build.rpm.dir" value="${build.root}/rpm"/>
+    <property name="build.checkout.dir" value="${build.root}/checkout"/>
+    <property name="build.profile.dir" value="${build.root}/profiles"/>
+    <property name="default-modules.dir" value="${basedir}/default-modules"/>
+
+    <!--  Relative properties based on checkout.home from build.properties -->
+    <dirname property="checkout.home" file="${basedir}"/>
+    <property name="eap.home" value="${checkout.home}/jboss-eap6-master"/>
+
+    <!-- Ant contrib installation that provides additional ant tasks -->
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+        <classpath>
+            <pathelement location="${checkout.home}/tools/ant-contrib/ant-contrib-1.0b3.jar"/>
+        </classpath>
+    </taskdef>
+
+    <taskdef name="xmltask"
+             classname="com.oopsconsultancy.xmltask.ant.XmlTask"/>
+
+    <!-- Setup svnant and include svn related ant tasks file -->
+    <property name="svnant.home" value="${checkout.home}/tools/svnant-1.3.1"/>
+
+    <path id="path.svnant">
+        <pathelement location="${svnant.home}/lib/svnant.jar"/>
+        <pathelement location="${svnant.home}/lib/svnClientAdapter.jar"/>
+    </path>
+
+    <typedef resource="org/tigris/subversion/svnant/svnantlib.xml"
+             classpathref="path.svnant"
+            />
+
+    <svnSetting id="svn.settings" username="${svn.repo.user}" password="${svn.repo.passwd}" javahl="true"/>
+
+    <property name="master.revision.name" value="jboss-eap-${major.version}.${minor.version}"/>
+    <property name="release.files.dir" value="${release.files.rootdir}/${master.revision.name}"/>
+
+    <!-- Properties that specify the server configuration templates to use -->
+    <property name="templates.default" value="default"/>
+    <property name="templates.prod" value="production"/>
+
+    <!-- Include macrodefs applicable to all created configuration profiles -->
+    <import file="${basedir}/macros.xml"/>
+
+    <target name="setup-build-env" unless="build.env.setup" depends="clean">
+        <hostinfo prefix="host"/>
+        <echo>Running on Host: ${host.NAME}</echo>
+        <mkdir dir="${build.root}"/>
+        <mkdir dir="${build.rpm.dir}"/>
+        <mkdir dir="${build.rpm.dir}/BUILD"/>
+        <mkdir dir="${build.rpm.dir}/SPECS"/>
+        <mkdir dir="${build.rpm.dir}/SOURCES"/>
+        <mkdir dir="${build.rpm.dir}/RPMS"/>
+        <mkdir dir="${build.rpm.dir}/SRPMS"/>
+        <mkdir dir="${build.checkout.dir}"/>
+        <mkdir dir="${build.profile.dir}"/>
+        <property name="build.env.setup" value="true"/>
+    </target>
+
+    <target name="clean" description="Cleans up the build environment and deletes all temporary build files" unless="pristine-build">
+        <delete dir="${build.root}"/>
+        <property name="pristine-build" value="true"/>
+    </target>
+
+    <target name="checkout"
+            depends="setup-build-env" unless="build.env.checkout.done">
+        <stopwatch name="timer"/>
+        <if>
+            <isset property="master.revision.specfile.name" />
+            <then>
+                <echo>Checking out into: ${build.checkout.dir}/${master.revision.name}</echo>
+                <!--suppress AntResolveInspection -->
+                <svn refid="svn.settings">
+                    <export srcUrl="${svn.repo.url}/jboss-eap6-master" destPath="${build.checkout.dir}/${master.revision.name}"
+                            force="Yes" revision="HEAD"/>
+                </svn>
+            </then>
+            <else>
+                <antcall target="yumdownloader" inheritall="true" inheritrefs="true" />
+            </else>
+        </if>
+        <stopwatch name="timer" action="total"/>
+        <property name="build.env.checkout.done" value="true"/>
+    </target>
+
+    <target name="build-all" description="Build RPMs out of all configured profiles" depends="checkout">
+        <foreach target="setup-profile" param="profile.dir" inheritall="true" inheritrefs="true">
+            <path>
+                <dirset dir="${basedir}/profiles">
+                    <include name="*"/>
+                </dirset>
+            </path>
+        </foreach>
+    </target>
+
+    <target name="prepare-profile" depends="checkout">
+        <!-- Remove the preceding paths from the profile.dir because we are setting up -->
+        <!-- the target environment -->
+        <!--suppress AntResolveInspection -->
+        <basename property="profile.name" file="${profile.dir}"/>
+
+        <echo>Setting up Profile: ${profile.name}</echo>
+
+        <!-- Create our standard profile layout -->
+        <mkdir dir="${build.profile.dir}/${profile.name}"/>
+        <mkdir dir="${build.profile.dir}/${profile.name}/configuration"/>
+        <mkdir dir="${build.profile.dir}/${profile.name}/deployments"/>
+        <mkdir dir="${build.profile.dir}/${profile.name}/modules"/>
+        <mkdir dir="${build.profile.dir}/${profile.name}/tmp"/>
+        <mkdir dir="${build.profile.dir}/${profile.name}/lib/ext"/>
+
+        <!-- Begin copying of files need to run the profile -->
+        <!-- Make sure we check for the marker file in profile.dir -->
+        <copy todir="${build.profile.dir}/${profile.name}/configuration">
+            <fileset dir="${build.checkout.dir}/${master.revision.name}/standalone/configuration">
+                <include name="*.properties"/>
+            </fileset>
+        </copy>
+
+        <!-- Copy custom modules from the profile to the profile modules directory -->
+        <copy todir="${build.profile.dir}/${profile.name}/modules">
+            <!--suppress AntResolveInspection -->
+            <fileset dir="${profile.dir}/modules"/>
+        </copy>
+
+        <!-- Make sure we handle the marker files correctly, so the admin can decide from which profile he -->
+        <!-- wants to start from                                                                           -->
+        <!-- This Configuration will later be read into a buffer and be modified then                      -->
+        <if>
+            <!--suppress AntResolveInspection -->
+            <available file="${profile.dir}/standalone-full.xml"/>
+            <then>
+                <copy file="${build.checkout.dir}/${master.revision.name}/standalone/configuration/standalone-full.xml"
+                      tofile="${build.profile.dir}/${profile.name}/configuration/standalone.xml"/>
+            </then>
+            <elseif>
+                <!--suppress AntResolveInspection -->
+                <available file="${profile.dir}/standalone-ha.xml"/>
+                <then>
+                    <copy file="${build.checkout.dir}/${master.revision.name}/standalone/configuration/standalone-ha.xml"
+                          tofile="${build.profile.dir}/${profile.name}/configuration/standalone.xml"/>
+                </then>
+            </elseif>
+            <elseif>
+                <!--suppress AntResolveInspection -->
+                <available file="${profile.dir}/standalone-full-ha.xml"/>
+                <then>
+                    <copy file="${build.checkout.dir}/${master.revision.name}/standalone/configuration/standalone-full-ha.xml"
+                          tofile="${build.profile.dir}/${profile.name}/configuration/standalone.xml"/>
+                </then>
+            </elseif>
+            <else>
+                <copy file="${build.checkout.dir}/${master.revision.name}/standalone/configuration/standalone.xml"
+                      tofile="${build.profile.dir}/${profile.name}/configuration/standalone.xml"/>
+            </else>
+        </if>
+
+        <!-- Let us process the copied standalone.xml and insert the stuff from the configuration directories -->
+        <foreach target="merge-standalone-xml" param="subsystem.name" inheritall="true" inheritrefs="true">
+            <path>
+                <dirset dir="${basedir}/profiles/${profile.name}/configuration">
+                    <include name="*"/>
+                </dirset>
+            </path>
+        </foreach>
+
+        <!-- Copy the Microsoft JDBC Driver (jtds) in this case if we find the marker file -->
+        <if>
+            <!--suppress AntResolveInspection -->
+            <available file="${profile.dir}/enable-mssql"/>
+            <then>
+                <copy todir="${build.profile.dir}/${profile.name}/modules">
+                    <fileset dir="${default-modules.dir}/jtds"/>
+                </copy>
+            </then>
+        </if>
+
+        <!-- Copy the MySQL JDBC Driver if we find the marker file -->
+        <if>
+            <!--suppress AntResolveInspection -->
+            <available file="${profile.dir}/enable-mysql"/>
+            <then>
+                <copy todir="${build.profile.dir}/${profile.name}/modules">
+                    <fileset dir="${default-modules.dir}/mysql"/>
+                </copy>
+            </then>
+        </if>
+
+        <!-- Copy the Oracle JDBC Driver if we find the marker file -->
+        <if>
+            <!--suppress AntResolveInspection -->
+            <available file="${profile.dir}/enable-oracle"/>
+            <then>
+                <copy todir="${build.profile.dir}/${profile.name}/modules">
+                    <fileset dir="${default-modules.dir}/oracle"/>
+                </copy>
+            </then>
+        </if>
+
+        <!-- Copy the profile specific run.conf and jboss.properties to the configuration directory -->
+        <!-- run.conf will be renamed to ${profile.name}_run.conf during copy -->
+        <!-- jboss.properties will be renamed to ${profile.name}.properties during copy -->
+        <!--suppress AntResolveInspection -->
+        <copy file="${profile.dir}/properties/run.conf"
+              tofile="${build.profile.dir}/${profile.name}/configuration/run.conf">
+            <filterset>
+                <filter token="PROFILE_NAME" value="${profile.name}"/>
+                <filter token="JBOSS_LOG_DIR" value="${jboss.log.dir}"/>
+                <filter token="CONFIG_DIR" value="${eap.profile.directory}"/>
+            </filterset>
+        </copy>
+        <!--suppress AntResolveInspection -->
+        <copy file="${profile.dir}/properties/jboss.properties"
+              tofile="${build.profile.dir}/${profile.name}/configuration/jboss.properties">
+            <filterset>
+                <filter token="PROFILE_NAME" value="${profile.name}"/>
+                <filter token="JBOSS_LOG_DIR" value="${jboss.log.dir}"/>
+                <filter token="CONFIG_DIR" value="${eap.profile.directory}"/>
+                <filter token="APP_LOG_DIR" value="${common.app.log.dir}"/>
+                <filter token="STORAGE_DIR" value="${common.app.storage.dir}"/>
+            </filterset>
+        </copy>
+
+        <!--suppress AntResolveInspection -->
+        <copy file="${basedir}/blueprints/jboss-as-standalone.sh"
+              tofile="${build.profile.dir}/${profile.name}/configuration/jboss_init_${profile.name}">
+            <filterset>
+                <filter token="PROFILE_DIR" value="${eap.profile.directory}/${profile.name}"/>
+                <filter token="PROFILE_NAME" value="${profile.name}"/>
+            </filterset>
+        </copy>
+        <!--suppress AntResolveInspection -->
+        <copy file="${basedir}/blueprints/jboss-as.conf"
+              tofile="${build.profile.dir}/${profile.name}/configuration/jboss_${profile.name}_sysconfig">
+            <filterset>
+                <filter token="RUN_AS_USER" value="${runas.user}"/>
+                <filter token="PROFILE_DIR" value="${eap.profile.directory}/${profile.name}"/>
+            </filterset>
+        </copy>
+
+        <!-- convert all line endings to unix format -->
+        <fixcrlf srcdir="${build.profile.dir}/${profile.name}" includes="**/*" eol="lf" />
+
+        <!-- Now that we have everything in place, it is time to investigate the standalone.xml that is -->
+        <!-- copied to the profile, and mangle it the way we want it.                                   -->
+        <tar destfile="${build.rpm.dir}/SOURCES/${profile.name}-${master.revision.name}.tar" compression="none">
+            <tarfileset dir="${build.profile.dir}/${profile.name}" prefix="${profile.name}"/>
+        </tar>
+        <if>
+             <available file="${basedir}/rpm/${profile.specfile.name}" />
+            <then>
+                <copy file="${basedir}/rpm/${profile.specfile.name}"
+                      tofile="${build.rpm.dir}/SPECS/${profile.name}-${master.revision.name}.spec">
+                    <filterset>
+                        <filter token="RELEASE_NAME" value="${master.revision.name}"/>
+                        <filter token="PACKAGE_VERSION" value="${major.version}.${minor.version}"/>
+                        <filter token="PACKAGE_RELEASE" value="${release.number}"/>
+                        <filter token="PROFILE_NAME" value="${profile.name}"/>
+                        <filter token="INSTALL_ROOT" value="${target.installation.directory}"/>
+                        <filter token="INSTALL_PREFIX" value="${target.jboss.home.directory}"/>
+                        <filter token="CONFIG_BASEDIR" value="${eap.profile.directory}"/>
+                        <filter token="RUNAS_USER" value="${runas.user}"/>
+                        <filter token="RUNAS_GROUP" value="${runas.group}"/>
+                        <filter token="COUNTRY_CODE" value="de"/>
+                        <filter token="JDK_HOME" value="${java.home}"/>
+                        <filter token="JBOSS_LOG_DIR" value="${jboss.log.dir}"/>
+                        <filter token="APP_LOG_DIR" value="${common.app.log.dir}"/>
+                        <filter token="UPSTREAM_RELEASE" value="${profile.requires.upstream}" />
+                        <filter token="UPSTREAM_RELEASE_VERSION" value="${profile.requires.upstream.version}" />
+                    </filterset>
+                </copy>
+            </then>
+            <else>
+                <fail message="${basedir}/rpm/${profile.specfile.name} is unavailable. Unable to create RPM Packages"/>
+            </else>
+        </if>
+        <rpm specFile="${profile.name}-${master.revision.name}.spec" topDir="${build.rpm.dir}"
+             cleanBuildDir="true" removeSpec="true" failOnError="true"
+             command="-bb"/>
+
+        <!-- The RPM is built, let us move it to where it belongs -->
+        <move todir="${release.files.dir}">
+            <fileset dir="${build.rpm.dir}/RPMS/">
+                <include name="**/*${profile.name}*.rpm"/>
+            </fileset>
+        </move>
+
+        <if>
+            <istrue value="${signed.rpms}"/>
+            <then>
+                <signRpm releaseDir="${release.files.dir}" pkg="${profile.name}" />
+            </then>
+            <else>
+                <echo>Not signing the RPM Packages. If you want to sign them set signed.rpms to true in build.properties</echo>
+            </else>
+        </if>
+
+    </target>
+
+    <target name="build-single" description="Creates a single RPM of a profile. The Profile name has to be provided as a parameter (-Dprofile.dir=[profiledirectory)">
+        <fail message="You have to define the profile directory when calling this script! -Dprofile.dir=[profiledirectory]" unless="profile.dir" />
+        <antcall target="prepare-profile" inheritall="true" inheritrefs="true" />
+    </target>
+
+    <macrodef name="signRpm">
+        <attribute name="releaseDir"/>
+        <attribute name="pkg"/>
+        <sequential>
+            <foreach target="signRpmTarget" param="rpm.to.sign">
+                <path>
+                    <fileset dir="@{releaseDir}" includes="**/*@{pkg}*.rpm"/>
+                </path>
+            </foreach>
+        </sequential>
+    </macrodef>
+
+    <target name="signRpmTarget">
+        <exec executable="sudo">
+            <env key="GNUPGHOME" value="/.gnupg" />
+            <arg value="${basedir}/rpm-sign.exp" />
+            <!--suppress AntResolveInspection -->
+            <arg value="${rpm.to.sign}"/>
+        </exec>
+        <exec executable="sudo">
+            <arg value="chmod" />
+            <arg value="g+w" />
+            <!--suppress AntResolveInspection -->
+            <arg value="${rpm.to.sign}"/>
+        </exec>
+    </target>
+
+    <target name="yumdownloader" depends="setup-build-env">
+        <exec executable="/usr/bin/yumdownloader">
+            <arg value="--destdir=${build.checkout.dir}" />
+            <arg value="${config.files.rpm.pkg.name}" />
+        </exec>
+    </target>
+
+    <target name="merge-standalone-xml">
+        <!--suppress AntResolveInspection -->
+        <basename property="subsystem" file="${subsystem.name}"/>
+
+        <!-- Let us process the copied standalone.xml and insert the stuff from the configuration directories-->
+        <xmltask source="${build.profile.dir}/${profile.name}/configuration/standalone.xml"
+                 dest="${build.profile.dir}/${profile.name}/configuration//standalone-parsed.xml">
+            <replace path="//*[contains(namespace-uri(), '${subsystem}') and local-name()='subsystem']" withfile="${basedir}/profiles/${profile.name}/configuration/${subsystem}/configuration.xml" />
+        </xmltask>
+
+        <move file="${build.profile.dir}/${profile.name}/configuration//standalone-parsed.xml"
+              tofile="${build.profile.dir}/${profile.name}/configuration/standalone.xml" />
+    </target>
+</project>

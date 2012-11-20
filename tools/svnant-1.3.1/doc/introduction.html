@@ -1,0 +1,428 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Introduction</title>
+<meta http-equiv="Content-Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="http://tortoisesvn.tigris.org/branding/css/print.css" media="print">
+<style type="text/css">
+        /*  */
+            @import "http://subclipse.tigris.org/branding/css/tigris.css";
+            @import "http://subclipse.tigris.org/branding/css/inst.css";
+        /*  */
+      </style>
+<style type="text/css">
+        table {
+          border: 1pt solid gray;
+          border-collapse: collapse;
+          width: 70%;
+        }
+        tr, td {
+          border: 1pt solid gray;
+        }
+        tr:hover {
+          background-color: rgb(93%,93%,93%);
+        }
+        td {
+          padding: 2pt;
+        }
+        tr {
+          width: 100%;
+        }
+        h1 {
+          font-size: 200%; text-transform: lowercase; letter-spacing: 3px;
+          margin-bottom: 1em; 
+          padding: 0.66em 0 0.33em 1em;
+          /* background: rgb(85%,85%,70%); */
+        }
+        h2 {
+          background: rgb(85%,85%,70%);
+          margin-bottom: 1em; 
+        }
+        h3 {
+          margin-bottom: 1em; 
+          border:1px solid rgb(85%,85%,70%);
+          color: rgb(55%,55%,40%);
+          padding: 0.66em 0 0.33em 1em;
+          background-color: #f3f1f4;
+        }
+        .sample {
+          font-family: Courier, "Courier New", monospace;
+          background-color: #f3f1f4;
+          margin-left: 10px;
+          margin-right: 10px;
+          padding-top: 3px;
+          padding-bottom: 3px;
+          padding-left: 3px;
+          padding-right: 3px;
+          border:1px dashed black;
+          width: 65%;
+        }
+        .firstcol {
+          width: 15em;
+          max-width: 15em;
+        }
+        .lastcol {
+          width: 6em;
+          max-width: 6em;
+        }
+        p.remark {
+          margin-left: 2em;
+          padding-left: 1em;
+          padding-top: 2pt;
+          padding-bottom: 2pt;
+          padding-right: 2pt;
+          border-style: solid;
+          border-color: red;
+          border-left-width: 4em;
+          border-top-width: 1pt;
+          border-right-width: 1pt;
+          border-bottom-width: 1pt;
+        }
+        table.attributes {
+          margin-bottom: 2em;
+        } 
+        table.nestedelements tr td.firstcol {
+          text-style: bold;
+          width: 10em;
+        }
+        tr.invisiblerow {
+          border: 0pt solid black;
+          padding-top: 3pt;
+          padding-bottom: 3pt;
+        }
+      </style>
+</head>
+<body lang="en-US" dir="ltr">
+<div class="h2" title="Introduction">
+<a style="visibility: hidden;" name="introduction"></a>
+<h2>Introduction</h2>
+  
+    
+<p>The <i>svnant</i> project provides a set of <a href="http://ant.apache.org">Ant</a> extensions
+    which can be used to interact with <a href="http://subversion.apache.org">Subversion</a> 
+    repositories.</p>
+  
+  
+</div>
+<div class="h2" title="Setup">
+<a style="visibility: hidden;" name="setup"></a>
+<h2>Setup</h2>
+  
+    
+<p>As with most Ant extensions, SvnAnt's task and type names must be 
+    <a href="http://ant.apache.org/manual/CoreTasks/typedef.html">mapped to their 
+    implementing classes</a> before being used in an Ant build file. An example of how to use 
+    the <em>antlib</em> bundled in SvnAnt's JAR file to perform that registration follows:</p>
+    
+    
+<a style="visibility: hidden;" name="snippetbasicdeclaration"></a>
+<pre class="sample">
+    
+      &lt;path id="path.svnant"&gt;
+          &lt;pathelement location="${basedir}/svnant.jar"/&gt;
+          &lt;pathelement location="${basedir}/svnClientAdapter.jar"/&gt;
+          &lt;!-- ... --&gt;
+      &lt;/path&gt;
+    
+      &lt;typedef 
+          resource="org/tigris/subversion/svnant/svnantlib.xml" 
+          classpathref="path.svnant"
+      /&gt;
+      
+    </pre>
+  
+    
+<p class="remark">Please be aware that the previously used declaration mechanism using the file
+    <code>svnant.properties</code> is no longer supported so it's necessary to update
+    your declaration if necessary.</p>
+  
+    
+<div class="h3" title="Binding">
+<a style="visibility: hidden;" name="binding"></a>
+<h3>Binding</h3>
+
+      
+<p>The path declaration shown <a href="#snippetbasicdeclaration">above</a> only contains the
+      necessary jar files used to realise subversion access.</p>
+      
+      
+<p>If you don't extend the above mentioned path declaration the only possibility to access
+      a subversion repository is the so called <code>commandline</code> binding.</p>
+      
+      
+<p>In general you want to extend this path with additional libraries in order to use a
+      specific binding to the subversion repository.</p>
+  
+      
+<p>The following list shows the requirements and the meaning of the available bindings
+      (the order specifies the precedence):</p>
+      
+      
+<h4>javahl</h4>
+      
+        
+<p>This type of binding makes use of a Java native bridge in order to realise the subversion
+        commands. These share libraries must be on your library path. You can launch the Ant
+        script using the following option (of course you need to adjust the path):</p>
+        
+        
+<pre class="sample">
+          -Djava.library.path=${basedir}/javahl
+        </pre>
+        
+        
+<p>You also need to add the Jar equivalent of the binding which is typically named
+        <code>svnjavahl.jar</code>.</p>
+        
+        
+<p class="remark">If this binding doesn't seem to work, you should check whether the library 
+        path is correct or not. You can use the <a href="http://ant.apache.org/manual/Tasks/echoproperties.html">echoproperties</a>
+        to get this information.</p>
+        
+      
+      
+      
+<h4>svnkit</h4>
+        
+        
+<p>The <a href="http://svnkit.com">svnkit</a> binding is purely java based. Using this
+        binding requires the jar <code>svnkit.jar</code> to be used for the <i>svnant</i>
+        declaration. You also need the <code>ganymed.jar</code> which provides the necessary
+        functionality for SSH based communication.</p>
+      
+      
+
+      
+<h4>commandline</h4>
+      
+        
+<p>This binding is the simpliest one and is considered to be a fallback solution. It
+        just looks for the <i>svn</i> executable itself, so it must be locatable using the
+        path specified within the propert <code>java.library.path</code>.</p>
+        
+      
+  
+    
+</div>
+  
+  
+</div>
+<div class="h2" title="License">
+<a style="visibility: hidden;" name="license"></a>
+<h2>License</h2>
+  
+    
+<a style="visibility: hidden;" name="license"></a>
+<pre class="sample">
+      SvnAnt license
+
+This license applies to all portions of svnant library, which 
+are not externally-maintained libraries (e.g. svnClientAdapter, JavaHL or SVNKit).
+
+Such libraries have their own licenses; we recommend you read them, as
+their terms may differ from the terms below.
+
+/* ====================================================================
+ * The Apache Software License, Version 1.1
+ *
+ * Copyright (c) 2000 The Apache Software Foundation.  All rights
+ * reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ *
+ * 3. The end-user documentation included with the redistribution,
+ *    if any, must include the following acknowledgment:
+ *       "This product includes software developed by the
+ *        Apache Software Foundation (http://www.apache.org/)."
+ *    Alternately, this acknowledgment may appear in the software itself,
+ *    if and wherever such third-party acknowledgments normally appear.
+ *
+ * 4. The names "Apache" and "Apache Software Foundation" must
+ *    not be used to endorse or promote products derived from this
+ *    software without prior written permission. For written
+ *    permission, please contact apache@apache.org.
+ *
+ * 5. Products derived from this software may not be called "Apache",
+ *    nor may "Apache" appear in their name, without prior written
+ *    permission of the Apache Software Foundation.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
+ * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ * ====================================================================
+ *
+ * This software consists of voluntary contributions made by many
+ * individuals on behalf of the Apache Software Foundation.  For more
+ * information on the Apache Software Foundation, please see
+ * &lt;http://www.apache.org/&gt;.
+ *
+ */
+
+
+
+    </pre>
+  
+  
+</div>
+<div class="h2" title="Changelog">
+<a style="visibility: hidden;" name="changelog"></a>
+<h2>Changelog</h2>
+  
+    
+<a style="visibility: hidden;" name="changelog"></a>
+<pre class="sample">
+      
+* 1.3.1
+- Built against svnClientAdapter 0.9.102, Subversion 1.6.x, SVNKit 1.3.x
+- #1271: made some refactorings so the codebase has been refactored to share resource related functionalities.
+- #1156: the checkout command now supports the depth parameter which is more accurate than the recursive parameter.
+- #1035: using the svntask as part of ant's parallel task should work properly now.
+- #587: it should be possible now to reject suspicious certificates so only trusted ones will be accepted.
+- #1272: command beginning and endings will be logged as verbose message as their mainly useful for
+         for error scenarios.
+- #828: 'wcVersion' won't incorporate 'svn:externals' anymore for the version calculation
+- #906: added 'singleinfo', 'list' commands
+- #906: added 'svnAvailable' condition
+- #619, #689: the 'log' command now provides a verbose option for the changed pathes
+- #815: the commands 'singleinfo' and 'info' are now supporting the property 'repourl'
+- #916: the 'copy' command now supports the option 'makeParents' to enforce the creation of parental structures
+- #1092: if 'failonerror' is set to false the 'svn' task will quit normally if there's no client adapter available
+- #1209: the 'wcVersion' command now adds a '.' to the prefix if it's missing
+- #1213: added the 'diffSummarize' command
+- #1079: improved handling of 'wcVersion' for unversioned pathes
+
+* 1.3.0
+- First version released by Joshua Frankamp
+
+* 1.2.1
+- Built against svnClientAdapter r4107, Subversion 1.5.x, SVNKit 1.2.x
+- fixed remote info bug
+- fixed svnkit exists task
+- added cleanup task
+
+* 1.2-rc1
+- Built against svnClientAdapter r3957, Subversion 1.5, SVNKit 1.20 beta4
+
+* 1.1-rc3
+- Built against svnClientAdapter r2847, Subversion 1.4.2 and SVNKit 1.1.0
+- renamed references to JavaSVN (former name of SVNKit)
+- renamed the svn task attribute "javasvn" to "svnkit"
+
+* 1.1-rc2
+- Built against svnClientAdapter r2834 and Subversion 1.4.0,
+  incorporating numerous bug fixes and improvements from both.
+- Added support for javasvn adapter
+- Added the "url" option to &lt;propget&gt; command
+- Added the "lastChangedDateProperty" to &lt;status&gt; command
+- Added the "dateFormatter" attribute to &lt;svn&gt; task
+- Added the "failonerror" attribute to &lt;svn&gt; task and svn selectors
+- Added the &lt;wcVersion&gt; command
+- Added the &lt;log&gt; command
+- Added svn related selectors 
+- Added SvnFileSet type
+- Added the force option to &lt;add&gt; command
+  
+* 1.0.0
+    </pre>
+    
+  
+</div>
+<div class="h2" title="Known issues">
+<a style="visibility: hidden;" name="knownissues"></a>
+<h2>Known issues</h2>
+  
+    
+<p>This chapter provides some known issues which might be of interest when you're experiencing
+    <i>weird</i> behaviour:</p>
+    
+    
+<div class="h3" title="General">
+<h3>General</h3>
+    
+      
+<ul>
+      
+        
+<li>
+<b>Mutable Ant properties</b>
+<br>
+        
+<p>Basically Ant properties aren't supposed to be changed. This means that their value
+        stays the same once they have been set. <i>svnant</i> doesn't take care of this so if
+        you're <i>reusing</i> property names you should be aware that they can be overwritten.</p>
+        
+<p>We won't change that behaviour since this is a historical result and modifying the
+        behaviour might cause issues on current build scripts.</p> 
+        
+</li>
+        
+      
+</ul>
+      
+    
+</div>
+
+    
+<div class="h3" title="JavaHL Binding">
+<h3>JavaHL Binding</h3>
+    
+      
+<ul>
+        
+        
+<li>
+<code>propset</code> fails with binary code<br>
+        
+<p>If you're trying to use the <code>propset</code> command with the <code>file</code>
+        attribute you might experience errors in case of binary data. This is an error within
+        the JavaHL implementation and has been filed using the following issue:</p>
+        
+<a href="http://subversion.tigris.org/issues/show_bug.cgi?id=3770">http://subversion.tigris.org/issues/show_bug.cgi?id=3770</a>
+        
+</li>
+        
+      
+</ul>
+    
+    
+</div>
+    
+  
+</div>
+<div class="h2" title="Authors">
+<a style="visibility: hidden;" name="authors"></a>
+<h2>Authors</h2>
+  
+    
+<ul>
+      
+<li>
+<a href="mailto:users@subclipse.tigris.org">C&eacute;dric Chabanois</a>
+</li>
+    
+</ul>
+  
+  
+</div>
+</body>
+</html>

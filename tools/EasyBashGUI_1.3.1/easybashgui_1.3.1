@@ -1,0 +1,2479 @@
+#!/usr/bin/env bash
+#
+#####################################
+#####################################
+#
+# EasyBashGUI allows you to use SAME script
+# with kdialog, zenity, Xdialog, or (c)dialog ...
+#
+#
+#	Dedicated to Angela, Nicole and Carlo.
+#
+#			Vittorio Cagnetta
+#	http://sites.google.com/site/easybashgui
+#
+#####################################
+#####################################
+#
+LIB_NAME="easybashgui"
+LIB_VERSION="1.3.1"
+LIB_URL="http://sites.google.com/site/easybashgui"
+LIB_AUTHOR="Vittorio Cagnetta"
+#
+#####################################
+#####################################
+# Initial settings...
+#
+##
+# mascotte...
+[ ${#OSTYPE} -gt 0 ] && os=${OSTYPE} || os="$(uname -s )"
+[ $(echo -n "${os}" | grep -i "bsd" | wc -c ) -gt 0 ] && \
+mascotte="Beastie" || mascotte="Tux"
+#
+##
+#
+# Window width and height...
+width=500
+: width
+height=378
+: height
+#
+##
+#
+# gsed...
+for word in sed gsed
+	do
+	unset -v "${word}"
+	unset -f "${word}"
+done 
+[ "${mascotte}" = "Beastie" ] && : #later we'll check for gsed binary...
+[ "${mascotte}" = "Tux" ] && shopt -s expand_aliases && alias gsed=sed #gsed is no more a function...
+typing_gsed="$(type "gsed" 2> /dev/null )"
+if [ ${#typing_gsed} -eq 0 ]
+	then
+	[ "${mascotte}" = "Beastie" ] && echo -e "\n\n\n\nYou need to install \"gsed\" ( GNU Sed ) port/package to use ${LIB_NAME}...\nSorry :(\n\n\n\n" 1>&2
+	[ "${mascotte}" = "Tux" ] && echo -e "\n\n\n\nErr.: gsed aliasing failed!...\n:(\n\n\n\n" 1>&2
+	#
+	exit 1
+fi
+#
+##
+#
+if [ -d "${HOME}/tmp" ]
+	then
+	dir_tmp="${HOME}/tmp"
+else
+	dir_tmp="/tmp"
+fi ; [ ! -d "${dir_tmp}" ] && mkdir "${dir_tmp}"
+: dir_tmp
+#
+if [ -f "${dir_tmp}/${file_tmp}" ]
+	then
+	: 1> "${dir_tmp}/${file_tmp}"
+	: 1> "${dir_tmp}/${file_ignore}"
+else
+	cd "${dir_tmp}"
+	export file_tmp="$(mktemp "XXXXXXXXXXXXXXXXXXXX" )"
+	export file_ignore="$(mktemp "XXXXXXXXXXXXXXXXXXXX" )"
+	cd - 1>/dev/null
+fi
+: file_tmp
+#
+##
+#
+# Set it if you want _force_ easybashgui mode :
+#supermode="" # <= 4 options: "auto" "kdialog", "zenity", "Xdialog", "dialog"
+: supermode
+#
+##
+#
+string_to_clean=':1: error: unexpected .*, expected .* - e.g. .*'
+: string_to_clean
+#
+##
+#
+#####################################
+#
+# ... kdialog, zenity, Xdialog, or dialog ???
+#
+################
+#
+kdialog="NO"
+esistenza_kdialog="$(type "kdialog" 2> /dev/null )"
+if [ ${#esistenza_kdialog} -gt 0 ]
+	then
+	vers_kdialog="$(kdialog --version 2> /dev/null | gsed -n s\#'^.*kdialog[[:punct:]]*[[:blank:]]*\(.*\)$'#'\1'#Ip )"
+	if [ $(echo -n "${vers_kdialog}" | tr -dc '[[:digit:]]' | wc -c ) -gt 0 ]
+		then
+		vers_kdialog_primo_campo=$(echo "${vers_kdialog}" | cut -d '.' -f 1 )
+		#vers_kdialog_secondo_campo=$(echo "${vers_kdialog}" | cut -d '.' -f 2 )
+		# versione minima => 1.0 ...
+		if [ ${vers_kdialog_primo_campo} -ge 1 ]
+			then
+			#
+			kdialog="SI"
+			#
+		fi #if [ ${vers_kdialog_primo_campo} -ge 1 ]
+		#
+	fi #if [ $(echo -n "${vers_kdialog}" | tr -dc '[[:digit:]]' | wc -c) -gt 0 ]
+	#
+fi #if [ ${#esistenza_kdialog} -gt 0 ]
+#
+zenity="NO"
+esistenza_zenity="$(type "zenity" 2> /dev/null )"
+if [ ${#esistenza_zenity} -gt 0 ]
+	then
+	vers_zenity="$(zenity --version 2>/dev/null )"
+	if [ $(echo -n "${vers_zenity}" | tr -dc '[[:digit:]]' | wc -c) -gt 0 ]
+		then
+		vers_zenity_primo_campo=$(echo "${vers_zenity}" | cut -d '.' -f 1 )
+		vers_zenity_secondo_campo=$(echo "${vers_zenity}" | cut -d '.' -f 2 )
+		# versione minima => 2.26 ...
+		if [ ${vers_zenity_primo_campo} -ge 2 -a ${vers_zenity_secondo_campo} -ge 26 ]
+			then
+			#
+			zenity="SI"
+			#
+		fi #if [ ${vers_zenity_primo_campo} -ge 2 -a ${vers_zenity_secondo_campo} -ge 26 ]
+		#
+	fi #if [ $(echo -n "${vers_zenity}" | tr -dc '[[:digit:]]' | wc -c) -gt 0 ]
+	#
+fi #if [ ${#esistenza_zenity} -gt 0 ]
+#
+Xdialog="NO"
+esistenza_Xdialog="$(type "Xdialog" 2> /dev/null)"
+if [ ${#esistenza_Xdialog} -gt 0 ]
+	then
+	Xdialog="SI"
+fi
+#
+################
+#
+if [ "${kdialog}" = "NO" -a "${zenity}" = "NO" -a "${Xdialog}" = "NO" ]
+	then
+	mode="dialog"
+	#
+elif [ "${kdialog}" = "NO" -a "${zenity}" = "NO" -a "${Xdialog}" = "SI" ]
+	then
+	mode="Xdialog"
+	#
+elif [ "${kdialog}" = "NO" -a "${zenity}" = "SI" -a "${Xdialog}" = "NO" ]
+	then
+	mode="zenity"
+	#
+elif [ "${kdialog}" = "NO" -a "${zenity}" = "SI" -a "${Xdialog}" = "SI" ]
+	then
+	# Esistono sia zenity sia Xdialog...
+	# priorita' a zenity ? ...solo se c'e' Gnome... : $(ps aux | grep "gnome-panel" | grep -v grep )
+	if [ $(ps aux | grep "gnome-panel" | grep -v grep | wc -c ) -gt 0 ]
+		then
+		# Sta girando Gnome... 
+		mode="zenity"
+		#
+	else
+		# Gnome NON sta' girando...
+		mode="Xdialog"
+		#
+	fi #if STA GIRANDO GNOME...
+	#
+elif [ "${kdialog}" = "SI" -a "${zenity}" = "NO" -a "${Xdialog}" = "NO" ]
+	then
+	mode="kdialog"
+	#
+elif [ "${kdialog}" = "SI" -a "${zenity}" = "NO" -a "${Xdialog}" = "SI" ]
+	then
+	# Esistono sia kdialog sia Xdialog...
+	# priorita' a kdialog ? ...solo se c'e' KDE... : 
+	kde="$(ps ax | grep "kde" | grep "bin" | grep -v grep )"
+	kwin="$(ps aux | grep "\<kwin\>" | grep -v grep )"
+	if [ ${#kde} -gt 0 -a ${#kwin} -gt 0 ]
+		then
+		# Sta girando KDE... 
+		mode="kdialog"
+		#
+	else
+		# KDE NON sta' girando...
+		mode="Xdialog"
+		#
+	fi #if STA GIRANDO KDE...
+	#
+elif [ "${kdialog}" = "SI" -a "${zenity}" = "SI" -a "${Xdialog}" = "NO" ]
+	then
+	# Esistono sia kdialog sia zenity...
+	# priorita' a zenity ? ...solo se c'e' Gnome... : $(ps aux | grep "gnome-panel" | grep -v grep )
+	if [ $(ps aux | grep "gnome-panel" | grep -v grep | wc -c ) -gt 0 ]
+		then
+		# Sta girando Gnome... 
+		mode="zenity"
+		#
+	else
+		# Gnome NON sta' girando...
+		mode="kdialog"
+		#
+	fi #if STA GIRANDO GNOME...
+	#
+elif [ "${kdialog}" = "SI" -a "${zenity}" = "SI" -a "${Xdialog}" = "SI" ]
+	then
+	# Esistono sia kdialog, sia zenity, sia Xdialog...
+	# priorita' a zenity ? ...solo se c'e' Gnome... : $(ps aux | grep "gnome-panel" | grep -v grep )
+	if [ $(ps aux | grep "gnome-panel" | grep -v grep | wc -c ) -gt 0 ]
+		then
+		# Sta girando Gnome... 
+		mode="zenity"
+		#
+	else
+		# Gnome NON sta' girando :
+		kde="$(ps ax | grep "kde" | grep "bin" | grep -v grep )"
+		kwin="$(ps aux | grep "\<kwin\>" | grep -v grep )"
+		if [ ${#kde} -gt 0 -a ${#kwin} -gt 0 ]
+			then
+			# Sta girando KDE... 
+			mode="kdialog"
+			#
+		else
+			# KDE NON sta' girando...
+			mode="Xdialog"
+			#
+		fi #if STA GIRANDO KDE...
+		#
+	fi #if STA GIRANDO GNOME...
+	#
+fi #if [ "${kdialog}" = "NO" -a "${zenity}" = "NO" -a "${Xdialog}" = "NO" ]
+#
+################
+#
+if [ "${mode}" = "kdialog" ]
+	then
+	kdialog_presente_e_funzionante="$(kdialog 2>&1 )"
+	if [ $(echo -n "${kdialog_presente_e_funzionante}" | grep ".*cannot connect to X server" | wc -c ) -eq 0 ]
+		then
+		mode="kdialog"
+	elif [ $(echo -n "${kdialog_presente_e_funzionante}" | grep ".*cannot connect to X server" | wc -c ) -gt 0 ]
+		then
+		mode="dialog"
+	fi
+	#
+fi
+#
+if [ "${mode}" = "zenity" ]
+	then
+	zenity_presente_e_funzionante="$(zenity 2>&1 )"
+	if [ $(echo -n "${zenity_presente_e_funzionante}" | grep ".*cannot open display:" | wc -c ) -eq 0 ]
+		then
+		mode="zenity"
+	elif [ $(echo -n "${zenity_presente_e_funzionante}" | grep ".*cannot open display:" | wc -c ) -gt 0 ]
+		then
+		mode="dialog"
+	fi
+	#
+fi
+#
+if [ "${mode}" = "Xdialog" ]
+	then
+	Xdialog_presente_e_funzionante="$(Xdialog --version 2>&1 )"
+	if [ $(echo -n "${Xdialog_presente_e_funzionante}" | grep "Do you run under X11 with GTK.*installed ?" | wc -c) -eq 0 ]
+		then
+		mode="Xdialog"
+	elif [ $(echo -n "${Xdialog_presente_e_funzionante}" | grep "Do you run under X11 with GTK.*installed ?" | wc -c) -gt 0 ]
+		then
+		mode="dialog"
+	fi
+	#
+fi
+#
+###############
+#
+#####################################
+#
+# This is only for test, mode should be set only in automatic way...
+if [ ${#supermode} -eq 0 ]
+	then
+	:
+else
+	case "${supermode}" in
+		"auto" )
+			:;;
+		#
+		"kdialog"|"zenity"|"Xdialog"|"dialog" )
+			mode="${supermode}" ;;
+		#
+		*)
+			echo -e "\nERR: \"supermode\" is not correct." 1>&2 && sleep 2 && exit 1 ;;
+		#
+	esac
+fi
+#
+#####################################
+#
+###############
+#
+: width
+: height
+if [ "${mode}" = "kdialog" ]
+	then
+	x_root=$(xwininfo -root | gsed -n s\#'^.*-geometry[[:blank:]]\([[:digit:]]\+\)[[:alpha:]]\([[:digit:]]\+\).*$'#'\1'#p )
+	y_root=$(xwininfo -root | gsed -n s\#'^.*-geometry[[:blank:]]\([[:digit:]]\+\)[[:alpha:]]\([[:digit:]]\+\).*$'#'\2'#p )
+	if [ ${#x_root} -gt 0 -a ${#y_root} -gt 0 ]
+		then
+		x="+$(( $(( ${x_root} / 2 )) - $(( ${width} / 2 )) ))"
+		y="+$(( $(( ${y_root} / 2 )) - $(( ${height} / 2 )) ))"
+	fi
+	#
+	dimensione_finestra="--geometry=${width}x${height}${x}${y}"
+	dimensione_finestra_1="--geometry=${width}x${height}${x}${y}"
+	dimensione_finestra_2=""
+	no_tags=""
+	no_buttons=""
+	menubox="--menu"
+	icona_Ok=""
+	icona_Attenzione=""
+	progress="--progressbar"
+	#
+	dialogo="kdialog ${dimensione_finestra}"
+	#
+elif [ "${mode}" = "zenity" ]
+	then
+	dimensione_finestra="--width=${width} --height=${height}"
+	dimensione_finestra_1="--width=${width} --height=${height}"
+	dimensione_finestra_2=""
+	no_tags=""
+	no_buttons=""
+	menubox="--list"
+	icona_Ok=""
+	icona_Attenzione=""
+	progress="--progress"
+	#
+	dialogo="zenity"
+	#
+elif [ "${mode}" = "Xdialog" ]
+	then
+	dimensione_finestra="${width}x${height}"
+	dimensione_finestra_1="${width}x${height}"
+	dimensione_finestra_2=""
+	no_tags="--no-tags"
+	no_buttons="--no-buttons"
+	menubox="--menubox"
+	icona_Ok="--icon /usr/local/bin/Ok.xpm"
+	icona_Attenzione="--icon /usr/local/bin/Attenzione.xpm"
+	progress="--progress"
+	#
+	dialogo="Xdialog"
+	#
+elif [ "${mode}" = "dialog" ]
+	then
+	dimensione_finestra="38 80"
+	dimensione_finestra_1=38
+	dimensione_finestra_2=80
+	no_tags=""
+	no_buttons=""
+	menubox="--menu"
+	icona_Ok=""
+	icona_Attenzione=""
+	if [ $(dialog --help 2>&1 | grep -- "--separator" | wc -c) -gt 0 ]
+		then
+		separator="--separator"
+	elif [ $(dialog --help 2>&1 | grep -- "--separate-widget" | wc -c) -gt 0 ]
+		then
+		separator="--separate-widget"
+	else
+		#echo -e "\nAttenzione:\n Non mi risulta ne' l'opzione \"--separator\", ne' l'opzione \"--separate-widget\" ...\n(E' possibile che il comando \"dialog\" NON sia aliasato a \"cdialog\", ma sia quello originale obsoleto...)"
+		echo -e "\nMaybe your \"dialog\" is NOT an alias to \"cdialog\", but is the original one obsolete... \nPlease, try to install \"cdialog\" and alias \"dialog\" to it..."
+		exit 1
+	fi
+	progress="--gauge"
+	#
+	dialogo="dialog"
+	#
+fi
+#
+##
+#
+###############################################
+###############################################
+######### ...  FUNCTIONS  ... #################
+###############################################
+###############################################
+#
+##
+#
+clean_temp()
+	{
+	local FUNCT_NAME="clean_temp"
+	local IFS=$' \t\n'
+	#
+	if [ -f "${dir_tmp}/${file_tmp}" ] 2> /dev/null
+		then
+		rm -f "${dir_tmp}/${file_tmp}" 2> /dev/null
+	fi
+	#
+	if [ -f "${dir_tmp}/${file_ignore}" ] 2> /dev/null
+		then
+		rm -f "${dir_tmp}/${file_ignore}" 2> /dev/null
+	fi
+	#
+	}
+# For backward italian compatibility... (deprecated)
+pulisci_temp()
+	{
+	clean_temp
+	}
+#
+##
+#
+# This is only used in Xdialog mode, for its *annoying* error messages sent in STDOUT...
+clean()
+	{
+	local FUNCT_NAME="clean"
+	local IFS=$' \t\n'
+	#
+	while read Xdialog_stdout
+		do
+		if [ $(echo -n "${Xdialog_stdout}" | grep "${string_to_clean}" | wc -c ) -gt 0 ]
+			then
+			echo "yes" 1> "${dir_tmp}/${file_ignore}"
+			echo "You have gtk 1.x config problems... :(" 1>&2
+		fi
+		echo "${Xdialog_stdout}" | grep -v "${string_to_clean}"
+	done
+	}
+# For backward italian compatibility... (deprecated)
+pulisci()
+	{
+	clean
+	}
+#
+##
+#
+arrotonda()
+	{
+	local FUNCT_NAME="arrotonda"
+	local IFS=$' \t\n'
+	#
+	float="${1}"
+	#
+	float__integer_part=$(echo "${float}" | cut -d '.' -f 1 ) ; [ ${#float__integer_part} -eq 0 ] && float__integer_part=0
+	float__decimal_part=$(echo "${float}" | cut -d '.' -f 2 )
+	# =>
+	[ ${float__decimal_part} -le 50 ] && \
+	arrotondato=${float__integer_part} || \
+	arrotondato=$(( ${float__integer_part} + 1 ))
+	#
+	echo "${arrotondato}"
+	#
+	}
+#
+##
+#
+if_arg_is_an_empty_variable_then_exit()
+	{
+	local FUNCT_NAME="if_arg_is_an_empty_variable_then_exit"
+	local IFS=$' \t\n'
+	#
+	var_da_controllare="${1}"
+	if [ $(echo -n "${!var_da_controllare}" | wc -c ) -eq 0 ]
+		then
+		#
+		clean_temp
+		exit
+	fi
+	}
+# For backward italian compatibility... (deprecated)
+se_argomento_risulta_variabile_vuota_allora_esci()
+	{
+	if_arg_is_an_empty_variable_then_exit "${1}"
+	}
+#
+##
+#
+exit_if_user_closes_window()
+	{
+	uscita=${?}
+	local FUNCT_NAME="exit_if_user_closes_window"
+	local IFS=$' \t\n'
+	#
+	if [ -f "${dir_tmp}/${file_ignore}" ]
+		then
+		if [ "$(0< "${dir_tmp}/${file_ignore}" )" = "yes" ]
+			then
+			return 0
+		fi
+	fi
+	#
+	if [ ${uscita} -ne 0 ]
+		then
+		clean_temp
+		if [ ${uscita} -eq 1 ]
+			then
+        		#
+			#echo "Hai cliccato su \"Cancel\"..."
+			#
+			exit 1
+			#
+		elif [ ${uscita} -eq 255 ]
+			then
+	        	#
+			#echo "Hai chiuso la finestra..."
+			#
+			exit 255
+			#
+		else
+			if [ "${dialogo}" = "zenity" -a ${uscita} -eq 5 ]
+				then
+				# Non far niente: sembra un codice di uscita di zenity legato ai temi...
+				:
+				#
+			else
+				#
+				#
+				alert_message ":( ...Something went wrong..."
+				echo -e "\n:( ...Something went wrong..." 1>&2
+				#
+				exit 1
+				#
+			fi
+			#
+		fi
+		#
+	fi
+	}
+# For backward italian compatibility... (deprecated)
+esci_se_chiude_finestra()
+	{
+	exit_if_user_closes_window
+	}
+#
+##
+#
+question()
+	{
+	local FUNCT_NAME="question"
+	local IFS=$' \t\n'
+	#
+	clean_temp
+	#
+	#########################################
+	# Begin check for user custom geometry...
+	reset_geometry="NO"
+	while [ "${1}" = "--width" -o "${1}" = "-w" -o "${1}" = "--height" -o "${1}" = "-h" ]
+		do
+		w_or_h="$(if [ "${1}" = "--width" -o "${1}" = "-w" ]
+				then
+				echo "width"
+			elif [ "${1}" = "--height" -o "${1}" = "-h" ]
+				then
+				echo "height"
+			fi )"
+		parameter=$(echo -n "${2}" | tr -dc '[[:digit:]]' ) ; [ ${#parameter} -eq 0 ] && break
+		reset_geometry="YES" && eval "local ${w_or_h}=${parameter}" && shift 2
+	done
+	[ "${reset_geometry}" = "YES" ] && \
+	if [ "${mode}" = "kdialog" ]
+		then
+		if [ ${#x_root} -gt 0 -a ${#y_root} -gt 0 ]
+			then
+			local x="+$(( $(( ${x_root} / 2 )) - $(( ${width} / 2 )) ))"
+			local y="+$(( $(( ${y_root} / 2 )) - $(( ${height} / 2 )) ))"
+		fi
+		local dimensione_finestra="--geometry=${width}x${height}${x}${y}"
+		local dimensione_finestra_1="--geometry=${width}x${height}${x}${y}"
+		local dialogo="kdialog ${dimensione_finestra}"
+	elif [ "${mode}" = "zenity" ]
+		then
+		local dimensione_finestra="--width=${width} --height=${height}"
+		local dimensione_finestra_1="--width=${width} --height=${height}"
+	elif [ "${mode}" = "Xdialog" ]
+		then
+		local dimensione_finestra="${width}x${height}"
+		local dimensione_finestra_1="${width}x${height}"
+	fi
+	# End check for user custom geometry...
+	#########################################
+	#
+	testo="${@}"
+	if [ "${dialogo}" = "kdialog ${dimensione_finestra}" ]
+		then
+		testo_kdialog="\n${testo}\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n..................................................................................................."
+		( ${dialogo} --title "$(basename "${0}" ): please confirm" --yesno "$(echo -e "${testo_kdialog}" )" 2> /dev/null )
+		exit_code="${?}"
+		#
+	elif [ "${dialogo}" = "zenity" ]
+		then
+		testo_zenity="$(echo "${testo}" | tr -d '<>' )"
+		( ${dialogo} --ok-label "Ok" --cancel-label "Cancel" --title "$(basename "${0}" ): please confirm" --question \
+		--text "$(echo -e "${testo_zenity}" )" ${dimensione_finestra_1} ${dimensione_finestra_2} 2> /dev/null )
+		exit_code="${?}"
+		#
+	else
+		( ${dialogo} --stdout --ok-label "Ok" --cancel-label "Cancel" --title "$(basename "${0}" ): please confirm" ${icona_Attenzione} --yesno \
+		"$(echo -e "${testo}" )" "${dimensione_finestra_1}" "${dimensione_finestra_2}" 2> /dev/null )
+		exit_code="${?}"
+		#
+	fi
+	#exit_if_user_closes_window #(l'ho commentato altrimenti lo cattura lui, il "Cancel" ... )
+	#
+	OUT_STDERR="${exit_code}"
+	echo "${OUT_STDERR}" 1>&2
+	#
+	return "${exit_code}"
+	#
+	}
+# For backward compatibility... (deprecated)
+ask_for_confirmation()
+	{
+	question "${@}"
+	}
+# For backward italian compatibility... (deprecated)
+richiedi_conferma()
+	{
+	question "${@}"
+	}
+#
+##
+#
+message()
+	{
+	local FUNCT_NAME="message"
+	local IFS=$' \t\n'
+	#
+	clean_temp
+	#
+	#########################################
+	# Begin check for user custom geometry...
+	reset_geometry="NO"
+	while [ "${1}" = "--width" -o "${1}" = "-w" -o "${1}" = "--height" -o "${1}" = "-h" ]
+		do
+		w_or_h="$(if [ "${1}" = "--width" -o "${1}" = "-w" ]
+				then
+				echo "width"
+			elif [ "${1}" = "--height" -o "${1}" = "-h" ]
+				then
+				echo "height"
+			fi )"
+		parameter=$(echo -n "${2}" | tr -dc '[[:digit:]]' ) ; [ ${#parameter} -eq 0 ] && break
+		reset_geometry="YES" && eval "local ${w_or_h}=${parameter}" && shift 2
+	done
+	[ "${reset_geometry}" = "YES" ] && \
+	if [ "${mode}" = "kdialog" ]
+		then
+		if [ ${#x_root} -gt 0 -a ${#y_root} -gt 0 ]
+			then
+			local x="+$(( $(( ${x_root} / 2 )) - $(( ${width} / 2 )) ))"
+			local y="+$(( $(( ${y_root} / 2 )) - $(( ${height} / 2 )) ))"
+		fi
+		local dimensione_finestra="--geometry=${width}x${height}${x}${y}"
+		local dimensione_finestra_1="--geometry=${width}x${height}${x}${y}"
+		local dialogo="kdialog ${dimensione_finestra}"
+	elif [ "${mode}" = "zenity" ]
+		then
+		local dimensione_finestra="--width=${width} --height=${height}"
+		local dimensione_finestra_1="--width=${width} --height=${height}"
+	elif [ "${mode}" = "Xdialog" ]
+		then
+		local dimensione_finestra="${width}x${height}"
+		local dimensione_finestra_1="${width}x${height}"
+	fi
+	# End check for user custom geometry...
+	#########################################
+	#
+	testo="${@}"
+	if [ "${dialogo}" = "kdialog ${dimensione_finestra}" ]
+		then
+		#
+		[ "${reset_geometry}" = "NO" ] && testo_kdialog="\n${testo}\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n..................................................................................................." || testo_kdialog="${testo}"
+		( ${dialogo} --title "$(basename "${0}" ): message" --msgbox "$(echo -e "${testo_kdialog}" )" )
+		exit_if_user_closes_window
+		#
+	elif [ "${dialogo}" = "zenity" ]
+		then
+		#
+		testo_zenity="$(echo "${testo}" | tr -d '<>' )"
+		( ${dialogo} --title "$(basename "${0}" ): message" --info --text "$(echo -e "${testo_zenity}" )" ${dimensione_finestra_1} ${dimensione_finestra_2} )
+		exit_if_user_closes_window
+		#
+	elif [ "${dialogo}" = "Xdialog" ]
+		then
+		#
+		( ${dialogo} --title "$(basename "${0}" ): message" --msgbox "$(echo -e "${testo}" )" "${dimensione_finestra_1}" "${dimensione_finestra_2}" 1> >( clean ) )
+		exit_if_user_closes_window
+		#
+	elif [ "${dialogo}" = "dialog" ]
+		then
+		#
+		( ${dialogo} --title "$(basename "${0}" ): message" --msgbox "$(echo -e "${testo}" )" "${dimensione_finestra_1}" "${dimensione_finestra_2}" )
+		exit_if_user_closes_window
+		#
+	fi
+	}
+# For backward italian compatibility... (deprecated)
+messaggio()
+	{
+	message "${@}"
+	}
+#
+##
+#
+alert_message()
+	{
+	local FUNCT_NAME="alert_message"
+	local IFS=$' \t\n'
+	#
+	clean_temp
+	#
+	#########################################
+	# Begin check for user custom geometry...
+	reset_geometry="NO"
+	while [ "${1}" = "--width" -o "${1}" = "-w" -o "${1}" = "--height" -o "${1}" = "-h" ]
+		do
+		w_or_h="$(if [ "${1}" = "--width" -o "${1}" = "-w" ]
+				then
+				echo "width"
+			elif [ "${1}" = "--height" -o "${1}" = "-h" ]
+				then
+				echo "height"
+			fi )"
+		parameter=$(echo -n "${2}" | tr -dc '[[:digit:]]' ) ; [ ${#parameter} -eq 0 ] && break
+		reset_geometry="YES" && eval "local ${w_or_h}=${parameter}" && shift 2
+	done
+	[ "${reset_geometry}" = "YES" ] && \
+	if [ "${mode}" = "kdialog" ]
+		then
+		if [ ${#x_root} -gt 0 -a ${#y_root} -gt 0 ]
+			then
+			local x="+$(( $(( ${x_root} / 2 )) - $(( ${width} / 2 )) ))"
+			local y="+$(( $(( ${y_root} / 2 )) - $(( ${height} / 2 )) ))"
+		fi
+		local dimensione_finestra="--geometry=${width}x${height}${x}${y}"
+		local dimensione_finestra_1="--geometry=${width}x${height}${x}${y}"
+		local dialogo="kdialog ${dimensione_finestra}"
+	elif [ "${mode}" = "zenity" ]
+		then
+		local dimensione_finestra="--width=${width} --height=${height}"
+		local dimensione_finestra_1="--width=${width} --height=${height}"
+	elif [ "${mode}" = "Xdialog" ]
+		then
+		local dimensione_finestra="${width}x${height}"
+		local dimensione_finestra_1="${width}x${height}"
+	fi
+	# End check for user custom geometry...
+	#########################################
+	#
+	testo="${@}"
+	if [ "${dialogo}" = "kdialog ${dimensione_finestra}" ]
+		then
+		#
+		[ "${reset_geometry}" = "NO" ] && testo_kdialog="\n${testo}\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n..................................................................................................." || testo_kdialog="${testo}"
+		( ${dialogo} --title "$(basename "${0}" ): alert message" --error "$(echo -e "${testo_kdialog}" )" )
+		exit_if_user_closes_window
+		#
+	elif [ "${dialogo}" = "zenity" ]
+		then
+		#
+		testo_zenity="$(echo "${testo}" | tr -d '<>' )"
+		( ${dialogo} --title "$(basename "${0}" ): alert message" --warning --text "$(echo -e "${testo_zenity}" )" ${dimensione_finestra_1} ${dimensione_finestra_2} )
+		exit_if_user_closes_window
+		#
+	elif [ "${dialogo}" = "Xdialog" ]
+		then
+		#
+		( ${dialogo} --title "$(basename "${0}" ): alert message" ${icona_Attenzione} --msgbox "$(echo -e "${testo}" )" "${dimensione_finestra_1}" "${dimensione_finestra_2}" 1> >( clean ) )
+		exit_if_user_closes_window
+		#
+	elif [ "${dialogo}" = "dialog" ]
+		then
+		#
+		( ${dialogo} --title "$(basename "${0}" ): alert message" ${icona_Attenzione} --msgbox "$(echo -e "${testo}" )" "${dimensione_finestra_1}" "${dimensione_finestra_2}" )
+		exit_if_user_closes_window
+		#
+	fi
+	}
+# For backward italian compatibility... (deprecated)
+messaggio_di_avviso()
+	{
+	alert_message "${@}"
+	}
+#
+##
+#
+ok_message()
+	{
+	local FUNCT_NAME="ok_message"
+	local IFS=$' \t\n'
+	#
+	clean_temp
+	#
+	#########################################
+	# Begin check for user custom geometry...
+	reset_geometry="NO"
+	while [ "${1}" = "--width" -o "${1}" = "-w" -o "${1}" = "--height" -o "${1}" = "-h" ]
+		do
+		w_or_h="$(if [ "${1}" = "--width" -o "${1}" = "-w" ]
+				then
+				echo "width"
+			elif [ "${1}" = "--height" -o "${1}" = "-h" ]
+				then
+				echo "height"
+			fi )"
+		parameter=$(echo -n "${2}" | tr -dc '[[:digit:]]' ) ; [ ${#parameter} -eq 0 ] && break
+		reset_geometry="YES" && eval "local ${w_or_h}=${parameter}" && shift 2
+	done
+	[ "${reset_geometry}" = "YES" ] && \
+	if [ "${mode}" = "kdialog" ]
+		then
+		if [ ${#x_root} -gt 0 -a ${#y_root} -gt 0 ]
+			then
+			local x="+$(( $(( ${x_root} / 2 )) - $(( ${width} / 2 )) ))"
+			local y="+$(( $(( ${y_root} / 2 )) - $(( ${height} / 2 )) ))"
+		fi
+		local dimensione_finestra="--geometry=${width}x${height}${x}${y}"
+		local dimensione_finestra_1="--geometry=${width}x${height}${x}${y}"
+		local dialogo="kdialog ${dimensione_finestra}"
+	elif [ "${mode}" = "zenity" ]
+		then
+		local dimensione_finestra="--width=${width} --height=${height}"
+		local dimensione_finestra_1="--width=${width} --height=${height}"
+	elif [ "${mode}" = "Xdialog" ]
+		then
+		local dimensione_finestra="${width}x${height}"
+		local dimensione_finestra_1="${width}x${height}"
+	fi
+	# End check for user custom geometry...
+	#########################################
+	#
+	testo="${@}"
+	if [ "${dialogo}" = "kdialog ${dimensione_finestra}" ]
+		then
+		#
+		[ "${reset_geometry}" = "NO" ] && testo_kdialog="\n${testo}\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n..................................................................................................." || testo_kdialog="${testo}"
+		( ${dialogo} --title "$(basename "${0}" ): ok message" --msgbox "$(echo -e "${testo_kdialog}" )" )
+		exit_if_user_closes_window
+		#
+	elif [ "${dialogo}" = "zenity" ]
+		then
+		#
+		testo_zenity="$(echo "${testo}" | tr -d '<>' )"
+		( ${dialogo} --title "$(basename "${0}" ): ok message" --info --text "$(echo -e "${testo_zenity}" )" ${dimensione_finestra_1} ${dimensione_finestra_2} )
+		exit_if_user_closes_window
+		#
+	elif [ "${dialogo}" = "Xdialog" ]
+		then
+		#
+		( ${dialogo} --title "$(basename "${0}" ): ok message" ${icona_Ok} --msgbox "$(echo -e "${testo}" )" "${dimensione_finestra_1}" "${dimensione_finestra_2}" 1> >( clean ) )
+		exit_if_user_closes_window
+		#
+	elif [ "${dialogo}" = "dialog" ]
+		then
+		#
+		( ${dialogo} --title "$(basename "${0}" ): ok message" ${icona_Ok} --msgbox "$(echo -e "${testo}" )" "${dimensione_finestra_1}" "${dimensione_finestra_2}" )
+		exit_if_user_closes_window
+		#
+	fi
+	}
+# For backward italian compatibility... (deprecated)
+messaggio_ok()
+	{
+	ok_message "${@}"
+	}
+#
+##
+#
+text()
+	{
+	local FUNCT_NAME="text"
+	local IFS=$' \t\n'
+	#
+	#clean_temp #( clean_temp not useful because this function will write in temp file... )
+	#
+	#########################################
+	# Begin check for user custom geometry...
+	reset_geometry="NO"
+	while [ "${1}" = "--width" -o "${1}" = "-w" -o "${1}" = "--height" -o "${1}" = "-h" ]
+		do
+		w_or_h="$(if [ "${1}" = "--width" -o "${1}" = "-w" ]
+				then
+				echo "width"
+			elif [ "${1}" = "--height" -o "${1}" = "-h" ]
+				then
+				echo "height"
+			fi )"
+		parameter=$(echo -n "${2}" | tr -dc '[[:digit:]]' ) ; [ ${#parameter} -eq 0 ] && break
+		reset_geometry="YES" && eval "local ${w_or_h}=${parameter}" && shift 2
+	done
+	[ "${reset_geometry}" = "YES" ] && \
+	if [ "${mode}" = "kdialog" ]
+		then
+		if [ ${#x_root} -gt 0 -a ${#y_root} -gt 0 ]
+			then
+			local x="+$(( $(( ${x_root} / 2 )) - $(( ${width} / 2 )) ))"
+			local y="+$(( $(( ${y_root} / 2 )) - $(( ${height} / 2 )) ))"
+		fi
+		local dimensione_finestra="--geometry=${width}x${height}${x}${y}"
+		local dimensione_finestra_1="--geometry=${width}x${height}${x}${y}"
+		local dialogo="kdialog ${dimensione_finestra}"
+	elif [ "${mode}" = "zenity" ]
+		then
+		local dimensione_finestra="--width=${width} --height=${height}"
+		local dimensione_finestra_1="--width=${width} --height=${height}"
+	elif [ "${mode}" = "Xdialog" ]
+		then
+		local dimensione_finestra="${width}x${height}"
+		local dimensione_finestra_1="${width}x${height}"
+	fi
+	# End check for user custom geometry...
+	#########################################
+	#
+	file="${dir_tmp}/${file_tmp}"
+	if [ "${dialogo}" = "kdialog ${dimensione_finestra}" ]
+		then
+		#
+		#
+		( ${dialogo} --title "$(basename "${0}" ): text" --textinputbox " " "$(cat - )" \
+		1> "${file}" 2> /dev/null )
+		exit_if_user_closes_window
+		#
+	elif [ "${dialogo}" = "zenity" ]
+		then
+		#
+		#
+		( ${dialogo} --title "$(basename "${0}" ): text" --text-info --editable --filename <(cat - ) ${dimensione_finestra_1} ${dimensione_finestra_2} \
+		1> "${file}" 2> /dev/null )
+		exit_if_user_closes_window
+		#
+	elif [ "${dialogo}" = "Xdialog" ]
+		then
+		#
+		#
+		( ${dialogo} --stdout --title "$(basename "${0}" ): text" ${icona_Ok} --editbox "-" "${dimensione_finestra_1}" "${dimensione_finestra_2}" \
+		1> "${file}" 2> /dev/null )
+		exit_if_user_closes_window
+		#
+	elif [ "${dialogo}" = "dialog" ]
+		then
+		dimensione_finestra_1=0
+		dimensione_finestra_2=0
+		cat - 1> "${dir_tmp}/${file_tmp}"
+		( ${dialogo} --title "$(basename "${0}" ): text" ${icona_Ok} --textbox "${file}" "${dimensione_finestra_1}" "${dimensione_finestra_2}" 2> /dev/null )
+		# 1> "${file}"
+		exit_if_user_closes_window
+		#
+	fi
+	#
+	OUT_STDERR="$(0< "${file}" )"
+	echo "${OUT_STDERR}" 1>&2
+	}
+#
+##
+#
+wait_seconds()
+	{
+	local FUNCT_NAME="wait_seconds"
+	local IFS=$' \t\n'
+	#
+	clean_temp
+	#
+	#########################################
+	# Begin check for user custom geometry...
+	reset_geometry="NO"
+	while [ "${1}" = "--width" -o "${1}" = "-w" -o "${1}" = "--height" -o "${1}" = "-h" ]
+		do
+		w_or_h="$(if [ "${1}" = "--width" -o "${1}" = "-w" ]
+				then
+				echo "width"
+			elif [ "${1}" = "--height" -o "${1}" = "-h" ]
+				then
+				echo "height"
+			fi )"
+		parameter=$(echo -n "${2}" | tr -dc '[[:digit:]]' ) ; [ ${#parameter} -eq 0 ] && break
+		reset_geometry="YES" && eval "local ${w_or_h}=${parameter}" && shift 2
+	done
+	[ "${reset_geometry}" = "YES" ] && \
+	if [ "${mode}" = "kdialog" ]
+		then
+		if [ ${#x_root} -gt 0 -a ${#y_root} -gt 0 ]
+			then
+			local x="+$(( $(( ${x_root} / 2 )) - $(( ${width} / 2 )) ))"
+			local y="+$(( $(( ${y_root} / 2 )) - $(( ${height} / 2 )) ))"
+		fi
+		local dimensione_finestra="--geometry=${width}x${height}${x}${y}"
+		local dimensione_finestra_1="--geometry=${width}x${height}${x}${y}"
+		local dialogo="kdialog ${dimensione_finestra}"
+	elif [ "${mode}" = "zenity" ]
+		then
+		local dimensione_finestra="--width=${width} --height=${height}"
+		local dimensione_finestra_1="--width=${width} --height=${height}"
+	elif [ "${mode}" = "Xdialog" ]
+		then
+		local dimensione_finestra="${width}x${height}"
+		local dimensione_finestra_1="${width}x${height}"
+	fi
+	# End check for user custom geometry...
+	#########################################
+	#
+	num_secondi=${1}
+	if [ "${dialogo}" = "kdialog ${dimensione_finestra}" ]
+		then
+		#
+		:
+		#
+		( kdialog --title "$(basename "${0}" ): please wait" --passivepopup "Please wait..." \
+		${num_secondi} )
+ 		#exit_if_user_closes_window
+		sleep $(( ${num_secondi} - 1 ))
+		#
+	elif [ "${dialogo}" = "zenity" ]
+		then
+		#
+		:
+		#
+		yes | ( ${dialogo} --title "$(basename "${0}" ): please wait" --progress --pulsate --auto-kill --text "Please wait..." ${dimensione_finestra} \
+		--timeout ${num_secondi} )
+ 		exit_if_user_closes_window
+		#
+	elif [ "${dialogo}" = "Xdialog" ]
+		then
+		#
+		num_milli_secondi=$(( ${num_secondi} * 1000 ))
+		#
+		( ${dialogo} ${no_buttons} --title "$(basename "${0}" ): please wait" ${icona_Attenzione} --infobox "Please wait..." ${dimensione_finestra} \
+		${num_milli_secondi} 1> >( clean ) )
+ 		exit_if_user_closes_window
+		#
+	elif [ "${dialogo}" = "dialog" ]
+		then
+		#
+		:
+		#
+		( ${dialogo} ${no_buttons} --title "$(basename "${0}" ): please wait" ${icona_Attenzione} --infobox "Please wait..." "${dimensione_finestra_1}" "${dimensione_finestra_2}" )
+		exit_if_user_closes_window
+		sleep ${num_secondi}
+		#
+	fi
+	}
+# For backward italian compatibility... (deprecated)
+attendi()
+	{
+	wait_seconds "${@}"
+	}
+#
+##
+#
+wait_for()
+	{
+	local FUNCT_NAME="wait_for"
+	local IFS=$' \t\n'
+	#
+	clean_temp
+	#
+	#########################################
+	# Begin check for user custom geometry...
+	reset_geometry="NO"
+	while [ "${1}" = "--width" -o "${1}" = "-w" -o "${1}" = "--height" -o "${1}" = "-h" ]
+		do
+		w_or_h="$(if [ "${1}" = "--width" -o "${1}" = "-w" ]
+				then
+				echo "width"
+			elif [ "${1}" = "--height" -o "${1}" = "-h" ]
+				then
+				echo "height"
+			fi )"
+		parameter=$(echo -n "${2}" | tr -dc '[[:digit:]]' ) ; [ ${#parameter} -eq 0 ] && break
+		reset_geometry="YES" && eval "local ${w_or_h}=${parameter}" && shift 2
+	done
+	[ "${reset_geometry}" = "YES" ] && \
+	if [ "${mode}" = "kdialog" ]
+		then
+		if [ ${#x_root} -gt 0 -a ${#y_root} -gt 0 ]
+			then
+			local x="+$(( $(( ${x_root} / 2 )) - $(( ${width} / 2 )) ))"
+			local y="+$(( $(( ${y_root} / 2 )) - $(( ${height} / 2 )) ))"
+		fi
+		local dimensione_finestra="--geometry=${width}x${height}${x}${y}"
+		local dimensione_finestra_1="--geometry=${width}x${height}${x}${y}"
+		local dialogo="kdialog ${dimensione_finestra}"
+	elif [ "${mode}" = "zenity" ]
+		then
+		local dimensione_finestra="--width=${width} --height=${height}"
+		local dimensione_finestra_1="--width=${width} --height=${height}"
+	elif [ "${mode}" = "Xdialog" ]
+		then
+		local dimensione_finestra="${width}x${height}"
+		local dimensione_finestra_1="${width}x${height}"
+	fi
+	# End check for user custom geometry...
+	#########################################
+	#
+	testo="${@}"
+	if [ "${dialogo}" = "kdialog ${dimensione_finestra}" ]
+		then
+		#
+		:
+		#
+		num_secondi=3
+		#testo_kdialog="\n${testo}\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n..................................................................................................."
+		testo_kdialog="${testo}"
+		# ${dialogo} NON si puo' usare qui...
+		yes | \
+		{ 
+		while read dummy_var
+			do
+			kdialog --title "$(basename "${0}" ): please wait" --passivepopup "$(echo -e "${testo_kdialog}" )" "${num_secondi}"
+			sleep $(( ${num_secondi} - 1 ))
+		done
+		sleep 1
+		} &>/dev/null &
+		#
+	elif [ "${dialogo}" = "zenity" ]
+		then
+		#
+		:
+		#
+		testo_zenity="$(echo "${testo}" | tr -d '<>' )"
+		yes | \
+		${dialogo} --title "$(basename "${0}" ): please wait" --progress --pulsate --auto-kill --text "$(echo -e "${testo_zenity}" )" ${dimensione_finestra} &>/dev/null &
+		#
+	elif [ "${dialogo}" = "Xdialog" ]
+		then
+		#
+		:
+		#
+		yes | \
+		${dialogo} ${no_buttons} --title "$(basename "${0}" ): please wait" ${icona_Attenzione} --infobox "$(echo -e "${testo}" )" ${dimensione_finestra} 0 &>/dev/null &
+		#
+	elif [ "${dialogo}" = "dialog" ]
+		then
+		#
+		num_secondi=1972
+		${dialogo} ${no_buttons} --title "$(basename "${0}" ): please wait" ${icona_Attenzione} --infobox "$(echo -e "${testo}" )" "${dimensione_finestra_1}" "${dimensione_finestra_2}" ; exit_if_user_closes_window
+		#
+		sleep "${num_secondi}" &
+		#
+	fi
+	#
+	export wait_for__PID="${!}"
+	#
+	OUT_STDERR="${wait_for__PID}"
+	echo "${OUT_STDERR}" 1>&2
+	#
+	}
+# For backward italian compatibility... (deprecated)
+aspetta()
+	{
+	wait_for "${@}"
+	}
+#
+##
+#
+terminate_wait_for()
+	{
+	local FUNCT_NAME="terminate_wait_for"
+	local IFS=$' \t\n'
+	#
+	[ ${#} -gt 0 ] && wait_for__PID="${1}"
+	[ ${#wait_for__PID} -gt 0 ] && kill "${wait_for__PID}"
+	}
+# For backward italian compatibility... (deprecated)
+termina_aspetta()
+	{
+	terminate_wait_for
+	}
+#
+##
+#
+fselect()
+	{
+	local FUNCT_NAME="fselect"
+	local IFS=$' \t\n'
+	#
+	#clean_temp #( clean_temp not useful because this function will write in temp file... )
+	#
+	#########################################
+	# Begin check for user custom geometry...
+	reset_geometry="NO"
+	while [ "${1}" = "--width" -o "${1}" = "-w" -o "${1}" = "--height" -o "${1}" = "-h" ]
+		do
+		w_or_h="$(if [ "${1}" = "--width" -o "${1}" = "-w" ]
+				then
+				echo "width"
+			elif [ "${1}" = "--height" -o "${1}" = "-h" ]
+				then
+				echo "height"
+			fi )"
+		parameter=$(echo -n "${2}" | tr -dc '[[:digit:]]' ) ; [ ${#parameter} -eq 0 ] && break
+		reset_geometry="YES" && eval "local ${w_or_h}=${parameter}" && shift 2
+	done
+	[ "${reset_geometry}" = "YES" ] && \
+	if [ "${mode}" = "kdialog" ]
+		then
+		if [ ${#x_root} -gt 0 -a ${#y_root} -gt 0 ]
+			then
+			local x="+$(( $(( ${x_root} / 2 )) - $(( ${width} / 2 )) ))"
+			local y="+$(( $(( ${y_root} / 2 )) - $(( ${height} / 2 )) ))"
+		fi
+		local dimensione_finestra="--geometry=${width}x${height}${x}${y}"
+		local dimensione_finestra_1="--geometry=${width}x${height}${x}${y}"
+		local dialogo="kdialog ${dimensione_finestra}"
+	elif [ "${mode}" = "zenity" ]
+		then
+		local dimensione_finestra="--width=${width} --height=${height}"
+		local dimensione_finestra_1="--width=${width} --height=${height}"
+	elif [ "${mode}" = "Xdialog" ]
+		then
+		local dimensione_finestra="${width}x${height}"
+		local dimensione_finestra_1="${width}x${height}"
+	fi
+	# End check for user custom geometry...
+	#########################################
+	#
+	if [ ${#} -gt 0 ]
+		then
+		dir="${1}"
+	else
+		dir="${HOME}/"
+	fi
+	#
+	if [ "${dialogo}" = "kdialog ${dimensione_finestra}" ]
+		then
+		fselect="--getopenfilename"
+		:
+		( eval ${dialogo} --title \"$(basename "${0}" ): file select\" ${fselect} \"${dir}\" 2> /dev/null )
+		#exit_if_user_closes_window
+		#
+	elif [ "${dialogo}" = "zenity" ] 
+		then
+		fselect="--file-selection"
+		dim_finestra="${dimensione_finestra}"
+		( eval ${dialogo} --title \"$(basename "${0}" ): file select\" ${fselect} --filename \"${dir}\" ${dim_finestra} 2> /dev/null )
+		#exit_if_user_closes_window
+		#
+	elif [ "${dialogo}" = "Xdialog" ]
+		then
+		fselect="--fselect"
+		dim_finestra="${dimensione_finestra}"
+		( eval ${dialogo} --stdout --title \"$(basename "${0}" ): file select\" ${fselect} \"${dir}\" ${dim_finestra} 2> /dev/null )
+		exit_if_user_closes_window
+		#
+	elif [ "${dialogo}" = "dialog" ]
+		then
+		fselect="--fselect"
+		dim=13
+		dim_finestra="\"${dim}\" \"${dimensione_finestra_2}\""
+		( eval ${dialogo} --stdout --title \"$(basename "${0}" ): file select\" ${fselect} \"${dir}\" ${dim_finestra} 2> /dev/null )
+		exit_if_user_closes_window
+		#
+	fi 1> "${dir_tmp}/${file_tmp}"
+	#
+	OUT_STDERR="$(0< "${dir_tmp}/${file_tmp}" )"
+	echo "${OUT_STDERR}" 1>&2
+	#
+	}
+#
+##
+#
+dselect()
+	{
+	local FUNCT_NAME="dselect"
+	local IFS=$' \t\n'
+	#
+	#clean_temp #( clean_temp not useful because this function will write in temp file... )
+	#
+	#########################################
+	# Begin check for user custom geometry...
+	reset_geometry="NO"
+	while [ "${1}" = "--width" -o "${1}" = "-w" -o "${1}" = "--height" -o "${1}" = "-h" ]
+		do
+		w_or_h="$(if [ "${1}" = "--width" -o "${1}" = "-w" ]
+				then
+				echo "width"
+			elif [ "${1}" = "--height" -o "${1}" = "-h" ]
+				then
+				echo "height"
+			fi )"
+		parameter=$(echo -n "${2}" | tr -dc '[[:digit:]]' ) ; [ ${#parameter} -eq 0 ] && break
+		reset_geometry="YES" && eval "local ${w_or_h}=${parameter}" && shift 2
+	done
+	[ "${reset_geometry}" = "YES" ] && \
+	if [ "${mode}" = "kdialog" ]
+		then
+		if [ ${#x_root} -gt 0 -a ${#y_root} -gt 0 ]
+			then
+			local x="+$(( $(( ${x_root} / 2 )) - $(( ${width} / 2 )) ))"
+			local y="+$(( $(( ${y_root} / 2 )) - $(( ${height} / 2 )) ))"
+		fi
+		local dimensione_finestra="--geometry=${width}x${height}${x}${y}"
+		local dimensione_finestra_1="--geometry=${width}x${height}${x}${y}"
+		local dialogo="kdialog ${dimensione_finestra}"
+	elif [ "${mode}" = "zenity" ]
+		then
+		local dimensione_finestra="--width=${width} --height=${height}"
+		local dimensione_finestra_1="--width=${width} --height=${height}"
+	elif [ "${mode}" = "Xdialog" ]
+		then
+		local dimensione_finestra="${width}x${height}"
+		local dimensione_finestra_1="${width}x${height}"
+	fi
+	# End check for user custom geometry...
+	#########################################
+	#
+	if [ ${#} -gt 0 ]
+		then
+		dir="${1}"
+	else
+		dir="${HOME}/"
+	fi
+	#
+	if [ "${dialogo}" = "kdialog ${dimensione_finestra}" ]
+		then
+		dselect="--getexistingdirectory"
+		:
+		( eval ${dialogo} --title \"$(basename "${0}" ): dir. select\" ${dselect} \"${dir}\" 2> /dev/null )
+		#exit_if_user_closes_window
+		#
+	elif [ "${dialogo}" = "zenity" ] 
+		then
+		dselect="--file-selection --directory"
+		dim_finestra="${dimensione_finestra}"
+		( eval ${dialogo} --title \"$(basename "${0}" ): dir. select\" ${dselect} --filename \"${dir}\" ${dim_finestra} 2> /dev/null )
+		#exit_if_user_closes_window
+		#
+	elif [ "${dialogo}" = "Xdialog" ]
+		then
+		dselect="--dselect"
+		dim_finestra="${dimensione_finestra}"
+		( eval ${dialogo} --stdout --title \"$(basename "${0}" ): dir. select\" ${dselect} \"${dir}\" ${dim_finestra} 2> /dev/null )
+		exit_if_user_closes_window
+		#
+	elif [ "${dialogo}" = "dialog" ]
+		then
+		dselect="--fselect"
+		dim=13
+		dim_finestra="\"${dim}\" \"${dimensione_finestra_2}\""
+		( eval ${dialogo} --stdout --title \"$(basename "${0}" ): dir. select\" ${dselect} \"${dir}\" ${dim_finestra} 2> /dev/null )
+		exit_if_user_closes_window
+		#
+	fi 1> "${dir_tmp}/${file_tmp}"
+	#
+	OUT_STDERR="$(0< "${dir_tmp}/${file_tmp}" )"
+	echo "${OUT_STDERR}" 1>&2
+	#
+	}
+#
+##
+#
+menu()
+	{
+	local FUNCT_NAME="menu"
+	local IFS=$' \t\n'
+	#
+	#clean_temp #( clean_temp not useful because this function will write in temp file... )
+	#
+	#########################################
+	# Begin check for user custom geometry...
+	reset_geometry="NO"
+	while [ "${1}" = "--width" -o "${1}" = "-w" -o "${1}" = "--height" -o "${1}" = "-h" ]
+		do
+		w_or_h="$(if [ "${1}" = "--width" -o "${1}" = "-w" ]
+				then
+				echo "width"
+			elif [ "${1}" = "--height" -o "${1}" = "-h" ]
+				then
+				echo "height"
+			fi )"
+		parameter=$(echo -n "${2}" | tr -dc '[[:digit:]]' ) ; [ ${#parameter} -eq 0 ] && break
+		reset_geometry="YES" && eval "local ${w_or_h}=${parameter}" && shift 2
+	done
+	[ "${reset_geometry}" = "YES" ] && \
+	if [ "${mode}" = "kdialog" ]
+		then
+		if [ ${#x_root} -gt 0 -a ${#y_root} -gt 0 ]
+			then
+			local x="+$(( $(( ${x_root} / 2 )) - $(( ${width} / 2 )) ))"
+			local y="+$(( $(( ${y_root} / 2 )) - $(( ${height} / 2 )) ))"
+		fi
+		local dimensione_finestra="--geometry=${width}x${height}${x}${y}"
+		local dimensione_finestra_1="--geometry=${width}x${height}${x}${y}"
+		local dialogo="kdialog ${dimensione_finestra}"
+	elif [ "${mode}" = "zenity" ]
+		then
+		local dimensione_finestra="--width=${width} --height=${height}"
+		local dimensione_finestra_1="--width=${width} --height=${height}"
+	elif [ "${mode}" = "Xdialog" ]
+		then
+		local dimensione_finestra="${width}x${height}"
+		local dimensione_finestra_1="${width}x${height}"
+	fi
+	# End check for user custom geometry...
+	#########################################
+	#
+	local IFS=$'\n'
+		threshold=${#}
+		args=( $(for (( num=1 ; num <= ${threshold} ; num++ ))
+					do
+					echo "${1}"
+					shift
+				done) )
+	local IFS=$' \t\n'
+	: args[@]
+	#
+	#
+	local IFS=$'\n'
+		if [ "${dialogo}" = "kdialog ${dimensione_finestra}" ]
+			then
+			stdout=""
+			text=""
+			column=""
+			dimensione_menu=""
+			parametri="$(for (( index=0 ; index < ${#args[@]} ; index++ ))
+					do
+					echo -ne "\"${args[${index}]}\"\t\"${args[${index}]}\"\t"
+				done )"
+		elif [ "${dialogo}" = "zenity" ]
+			then
+			stdout=""
+			text="--text"
+			column="--column\t\" \""
+			dimensione_menu=""
+			parametri="$(for (( index=0 ; index < ${#args[@]} ; index++ ))
+					do
+					echo -ne "\"${args[${index}]}\"\t"
+				done )"
+		elif [ "${dialogo}" = "Xdialog" ]
+			then
+			stdout="--stdout"
+			text=""
+			column=""
+			dimensione_menu=0
+			parametri="$(for (( index=0 ; index < ${#args[@]} ; index++ ))
+					do
+					echo -ne "\"${args[${index}]}\"\t\"${args[${index}]}\"\t"
+				done )"
+		elif [ "${dialogo}" = "dialog" ]
+			then
+			stdout="--stdout"
+			text=""
+			column=""
+			dimensione_menu=$(if [ ${#args[@]} -le 17 ]; then echo ${#args[@]}; else echo 17; fi )
+			parametri="$(for (( index=0 ; index < ${#args[@]} ; index++ ))
+					do
+					echo -ne "$(( ${index} + 1 ))\t\"${args[${index}]}\"\t"
+				done )"
+		fi
+	local IFS=$' \t\n'
+	#
+	#
+	local IFS=$'\t\n'
+		scelta="$(eval $(local IFS=$'\t' ; echo -e "${dialogo}\t${stdout}\t${no_tags}\t--title\t\"$(basename "${0}" ): menu\"\t${menubox}\t${text}\t\"Select option...\"\t${dimensione_finestra}\t${dimensione_menu}\t${column}\t${parametri}\t2>\t/dev/null" ; local IFS=$'\t\n') )"
+		if [ "${dialogo}" = "dialog" ]
+			then
+			if [ $(echo -n "${scelta}" | wc -c) -gt 0 ]
+				then
+				indice_capisci_a_me=$(( ${scelta} - 1 ))
+				scelta=${args[${indice_capisci_a_me}]}
+			fi
+		fi
+		#
+		####
+		#######
+		echo "${scelta}" | grep -v "${string_to_clean}" 1> "${dir_tmp}/${file_tmp}"
+		#######
+		####
+		#
+	local IFS=$' \t\n'
+	#
+	if [ $(echo -n "${scelta}" | grep -v "${string_to_clean}" | wc -c) -eq 0 ]
+		then
+		#Vuol dire che _non ha scelto nulla_ ( cioe' HA cliccato su "Cancel" ) ...
+		return 1
+	else
+		#Vuol dire che almeno QUALCOSA _l'ha scelta_ ( cioe' NON ha cliccato su "Cancel" ) ...
+		if [ "$(echo "${scelta}" | grep -v "${string_to_clean}" )" = "$(0< "${dir_tmp}/${file_tmp}" )" ]
+			then
+			:
+		else
+			question "Warning: could not write \"\${scelta}\" variable in: \"${dir_tmp}/${file_tmp}\" ...\nShould I continue the same ?"
+			if [ "${conferma}" -eq 0 ] #"Confermato"
+				then
+				:
+			elif [ "${conferma}" -eq 1 ] #"Non confermato"
+				then
+				return 1
+			fi
+		fi
+	fi
+	#
+	exit_if_user_closes_window
+	#
+	OUT_STDERR="$(0< "${dir_tmp}/${file_tmp}" )"
+	echo "${OUT_STDERR}" 1>&2
+	#
+	}
+#
+##
+#
+list()
+	{
+	local FUNCT_NAME="list"
+	local IFS=$' \t\n'
+	#
+	#clean_temp #( clean_temp not useful because this function will write in temp file... )
+	#
+	#########################################
+	# Begin check for user custom geometry...
+	reset_geometry="NO"
+	while [ "${1}" = "--width" -o "${1}" = "-w" -o "${1}" = "--height" -o "${1}" = "-h" ]
+		do
+		w_or_h="$(if [ "${1}" = "--width" -o "${1}" = "-w" ]
+				then
+				echo "width"
+			elif [ "${1}" = "--height" -o "${1}" = "-h" ]
+				then
+				echo "height"
+			fi )"
+		parameter=$(echo -n "${2}" | tr -dc '[[:digit:]]' ) ; [ ${#parameter} -eq 0 ] && break
+		reset_geometry="YES" && eval "local ${w_or_h}=${parameter}" && shift 2
+	done
+	[ "${reset_geometry}" = "YES" ] && \
+	if [ "${mode}" = "kdialog" ]
+		then
+		if [ ${#x_root} -gt 0 -a ${#y_root} -gt 0 ]
+			then
+			local x="+$(( $(( ${x_root} / 2 )) - $(( ${width} / 2 )) ))"
+			local y="+$(( $(( ${y_root} / 2 )) - $(( ${height} / 2 )) ))"
+		fi
+		local dimensione_finestra="--geometry=${width}x${height}${x}${y}"
+		local dimensione_finestra_1="--geometry=${width}x${height}${x}${y}"
+		local dialogo="kdialog ${dimensione_finestra}"
+	elif [ "${mode}" = "zenity" ]
+		then
+		local dimensione_finestra="--width=${width} --height=${height}"
+		local dimensione_finestra_1="--width=${width} --height=${height}"
+	elif [ "${mode}" = "Xdialog" ]
+		then
+		local dimensione_finestra="${width}x${height}"
+		local dimensione_finestra_1="${width}x${height}"
+	fi
+	# End check for user custom geometry...
+	#########################################
+	#
+	#
+	local IFS=$'\n'
+		threshold=${#}
+		args=( $(for (( num=1 ; num <= ${threshold} ; num++ ))
+					do
+					echo "${1}"
+					shift
+				done) )
+	local IFS=$' \t\n'
+	: args[@]
+	#
+	parametri="$(for (( index=0 ; index < ${#args[@]} ; index++ ))
+				do
+				#
+				arg_prog="${args[${index}]}"
+				first_char="${arg_prog:0:1}"
+				#
+				if [ "${first_char}" = "+" ]
+					then
+					arg="${arg_prog:1}"
+					if [ "${dialogo}" = "kdialog ${dimensione_finestra}" -o "${dialogo}" = "Xdialog" ]
+						then
+						echo -ne "\"${arg}\" \"${arg}\" \"on\" "
+						#
+					elif [ "${dialogo}" = "zenity" ]
+						then
+						echo -ne "\"TRUE\" \"${arg}\" "
+						#
+					elif [ "${dialogo}" = "dialog" ]
+						then
+						echo -ne "\"${arg}\" \"(click on 'space' to disable)\" \"on\" "
+						#
+					fi
+					#
+				else
+					#
+					if [ "${first_char}" = "-" ]
+						then
+						arg="${arg_prog:1}"
+					else
+						arg="${arg_prog}"
+					fi
+					#
+					if [ "${dialogo}" = "kdialog ${dimensione_finestra}" -o "${dialogo}" = "Xdialog" ]
+						then
+						echo -ne "\"${arg}\" \"${arg}\" \"off\" "
+						#
+					elif [ "${dialogo}" = "zenity" ]
+						then
+						echo -ne "\"FALSE\" \"${arg}\" "
+						#
+					elif [ "${dialogo}" = "dialog" ]
+						then
+						echo -ne "\"${arg}\" \"(click on 'space' to enable)\" \"off\" "
+						#
+					fi
+					#
+				fi #if [ "${first_char}" = "+" ]
+				#
+			done )"
+	: parametri
+	#
+	if [ "${dialogo}" = "kdialog ${dimensione_finestra}" ]
+		then
+		#
+		#dimensione_menu
+		#
+		scelte="$(eval ${dialogo} --title \"$(basename "${0}" ): list\" --separate-output --checklist \"Select options...\" ${parametri} 2> /dev/null )"
+		exit_code="${?}"
+		echo -e "${scelte}" 1> "${dir_tmp}/${file_tmp}"
+		#
+	elif [ "${dialogo}" = "zenity" ]
+		then
+		#
+		#dimensione_menu
+		#
+		scelte="$(eval ${dialogo} --title \"$(basename "${0}" ): list\" --separator \"\\n\" --list --checklist --column \" \" --column \" \" --text \"Select options...\" ${dimensione_finestra_1} ${dimensione_finestra_2} ${parametri} 2> /dev/null )"
+		exit_code="${?}"
+		echo -e "${scelte}" 1> "${dir_tmp}/${file_tmp}"
+		#
+	elif [ "${dialogo}" = "Xdialog" ]
+		then
+		#
+		dimensione_menu=0
+		#
+		scelte="$(eval ${dialogo} --title \"$(basename "${0}" ): list\" --stdout --separator \"\\n\" ${no_tags} ${icona_Ok} --checklist \"Select options...\" ${dimensione_finestra_1} ${dimensione_finestra_2} ${dimensione_menu} ${parametri} 2> /dev/null )"
+		exit_code="${?}"
+		echo -e "${scelte}" 1> "${dir_tmp}/${file_tmp}"
+		#
+	elif [ "${dialogo}" = "dialog" ]
+		then
+		#
+		dimensione_menu=$(if [ ${#args[@]} -le 17 ]; then echo ${#args[@]}; else echo 17; fi )
+		#
+		scelte="$(eval ${dialogo} --title \"$(basename "${0}" ): list\" --stdout  --separate-output ${icona_Ok} --checklist \"Select options...\" \"${dimensione_finestra_1}\" \"${dimensione_finestra_2}\" ${dimensione_menu} ${parametri} 2> /dev/null )"
+		exit_code="${?}"
+		echo -e "${scelte}" 1> "${dir_tmp}/${file_tmp}"
+		#
+	fi
+	#
+	OUT_STDERR="$(0< "${dir_tmp}/${file_tmp}" )"
+	echo "${OUT_STDERR}" 1>&2
+	[ ${#exit_code} -gt 0 ] && return "${exit_code}"
+	#
+	}
+#
+##
+#
+input()
+	{
+	local FUNCT_NAME="input"
+	local IFS=$' \t\n'
+	#
+	#clean_temp #( clean_temp not useful because this function will write in temp file... )
+	#
+	#########################################
+	# Begin check for user custom geometry...
+	reset_geometry="NO"
+	while [ "${1}" = "--width" -o "${1}" = "-w" -o "${1}" = "--height" -o "${1}" = "-h" ]
+		do
+		w_or_h="$(if [ "${1}" = "--width" -o "${1}" = "-w" ]
+				then
+				echo "width"
+			elif [ "${1}" = "--height" -o "${1}" = "-h" ]
+				then
+				echo "height"
+			fi )"
+		parameter=$(echo -n "${2}" | tr -dc '[[:digit:]]' ) ; [ ${#parameter} -eq 0 ] && break
+		reset_geometry="YES" && eval "local ${w_or_h}=${parameter}" && shift 2
+	done
+	[ "${reset_geometry}" = "YES" ] && \
+	if [ "${mode}" = "kdialog" ]
+		then
+		if [ ${#x_root} -gt 0 -a ${#y_root} -gt 0 ]
+			then
+			local x="+$(( $(( ${x_root} / 2 )) - $(( ${width} / 2 )) ))"
+			local y="+$(( $(( ${y_root} / 2 )) - $(( ${height} / 2 )) ))"
+		fi
+		local dimensione_finestra="--geometry=${width}x${height}${x}${y}"
+		local dimensione_finestra_1="--geometry=${width}x${height}${x}${y}"
+		local dialogo="kdialog ${dimensione_finestra}"
+	elif [ "${mode}" = "zenity" ]
+		then
+		local dimensione_finestra="--width=${width} --height=${height}"
+		local dimensione_finestra_1="--width=${width} --height=${height}"
+	elif [ "${mode}" = "Xdialog" ]
+		then
+		local dimensione_finestra="${width}x${height}"
+		local dimensione_finestra_1="${width}x${height}"
+	fi
+	# End check for user custom geometry...
+	#########################################
+	#
+	quanti_campi=${1}
+	: 1> "${dir_tmp}/${file_tmp}"
+	if [ "${dialogo}" = "kdialog ${dimensione_finestra}" ]
+		then
+		shift #...perche' il primo parametro e': "quanti_campi" ...
+		threshold=${#}
+		local IFS=$'\n'
+			args=( $(for (( num=1 ; num <= ${threshold} ; num++ ))
+					do
+					echo "${1}"
+					shift
+				done) )
+		local IFS=$' \t\n'
+		#
+		if [ ${quanti_campi} -eq 1 ]
+			then
+			#
+			# Questo "if" qui sotto e' per standardizzare col comportamento di Xdialog...
+			if [ ${#args[@]} -eq 1 ]
+				then
+				#Cioe' c'e' un UNICO ARGOMENTO, quindi va bene ...
+				:
+			elif [ ${#args[@]} -gt 1 ]
+				then
+				#Quando il campo e' unico, Xdialog NON METTE IL TITOLO sul campo (quindi ci devi mettere SOLO un argomento aggiuntivo, NON due o comunque piu' di uno )...
+				alert_message "Warning, problems in \"${0}\" source :\nwhen you use \"input 1 [args]\", args must be UNIQUE...\nE.g.: input \"1\" \"ciccio\" (NOT: input \"1\" \"ciccio\" \"franco\" )"
+				exit
+			fi
+			#
+			#
+			#
+			testo=" " #Perche' il campo e' UNO, e Xdialog con un solo arg NON ha il testo... sai, per standardizzare il comportamento di kdialog con quello di Xdialog...
+			parametro="${args[0]}"
+			#
+			#############
+			scelta="$(eval $(local IFS=$'\t' && echo -e "${dialogo}\t--title\t\"$(basename "${0}" ): data input\"\t--inputbox\t\"${testo}\"\t\"${parametro}\"\t2>\t/dev/null" ) )"
+			echo "${scelta}" 1>> "${dir_tmp}/${file_tmp}"
+			#############
+			#
+			if [ $(grep "${scelta}" 0< "${dir_tmp}/${file_tmp}" | wc -c ) -gt 0 ]
+				then
+				:
+			else
+				question "Warning: could not write \"\${scelta}\" variable in: \"${dir_tmp}/${file_tmp}\" ...\nShould I continue the same ?"
+				if [ "${conferma}" -eq 0 ] #"Confermato"
+					then
+					:
+				elif [ "${conferma}" -eq 1 ] #"Non confermato"
+					then
+					exit
+				fi
+			fi
+			#
+			exit_if_user_closes_window
+			#
+		else
+			for (( volta=1 ; volta <= $(( ${quanti_campi} * 2 )) ; volta++,volta++ ))
+				do
+				#
+				testo="${args[$(( ${volta} - 1 ))]}"
+				parametro="${args[${volta}]}"
+				#
+				#############
+				scelta="$(eval $(local IFS=$'\t' && echo -e "${dialogo}\t--title\t\"$(basename "${0}" ): data input\"\t--inputbox\t\"${testo}\"\t\"${parametro}\"\t2>\t/dev/null" ) )"
+				echo "${scelta}" 1>> "${dir_tmp}/${file_tmp}"
+				#############
+				#
+				if [ $(grep "${scelta}" 0< "${dir_tmp}/${file_tmp}" | wc -c ) -gt 0 ]
+					then
+					:
+				else
+					question "Warning: could not write \"\${scelta}\" variable in: \"${dir_tmp}/${file_tmp}\" ...\nShould I continue the same ?"
+					if [ "${conferma}" -eq 0 ] #"Confermato"
+						then
+						:
+					elif [ "${conferma}" -eq 1 ] #"Non confermato"
+						then
+						exit
+					fi
+				fi
+				#
+				exit_if_user_closes_window
+				#
+			done
+		fi #if [ ${quanti_campi} -eq 1 ]
+		#
+	elif [ "${dialogo}" = "zenity" ]
+		then
+		shift #...perche' il primo parametro e': "quanti_campi" ...
+		threshold=${#}
+		local IFS=$'\n'
+			args=( $(for (( num=1 ; num <= ${threshold} ; num++ ))
+					do
+					echo "${1}"
+					shift
+				done) )
+		local IFS=$' \t\n'
+		#
+		if [ ${quanti_campi} -eq 1 ]
+			then
+			#
+			# Questo "if" qui sotto e' per standardizzare col comportamento di Xdialog...
+			if [ ${#args[@]} -eq 1 ]
+				then
+				#Cioe' c'e' al massimo ${quanti_campi} e L'UNICO ARGOMENTO, quindi va bene ...
+				:
+			elif [ ${#args[@]} -gt 1 ] #Quando il campo e' unico, Xdialog NON METTE IL TITOLO sul campo (quindi ci devi mettere SOLO un argomento aggiuntivo, NON due o comunque piu' di uno )...
+				then
+				alert_message "Warning, problems in \"${0}\" source :\nwhen you use \"input 1 [args]\", args must be UNIQUE...\nE.g.: input \"1\" \"ciccio\" (NOT: input \"1\" \"ciccio\" \"franco\" )"
+				exit
+			fi
+			#
+			#
+			#
+			testo=" " #Perche' il campo e' UNO, e Xdialog con un solo arg NON ha il testo... sai, per standardizzare con Xdialog...
+			parametro="${args[0]}"
+			#
+			#############
+			scelta="$(eval $(local IFS=$'\t' && echo -e "${dialogo}\t--title\t\"$(basename "${0}" ): data input\"\t--entry\t--text\t\"${testo}\"\t${dimensione_finestra}\t--entry-text\t\"${parametro}\"\t2>\t/dev/null" ) )"
+			echo "${scelta}" 1>> "${dir_tmp}/${file_tmp}"
+			#############
+			#
+			if [ $(grep "${scelta}" 0< "${dir_tmp}/${file_tmp}" | wc -c ) -gt 0 ]
+				then
+				:
+			else
+				question "Warning: could not write \"\${scelta}\" variable in: \"${dir_tmp}/${file_tmp}\" ...\nShould I continue the same ?"
+				if [ "${conferma}" -eq 0 ] #"Confermato"
+					then
+					:
+				elif [ "${conferma}" -eq 1 ] #"Non confermato"
+					then
+					exit
+				fi
+			fi
+			#
+			exit_if_user_closes_window
+			#
+		else
+			for (( volta=1 ; volta <= $(( ${quanti_campi} * 2 )) ; volta++,volta++ ))
+				do
+				#
+				testo="${args[$(( ${volta} - 1 ))]}"
+				parametro="${args[${volta}]}"
+				#
+				#############
+				scelta="$(eval $(local IFS=$'\t' && echo -e "${dialogo}\t--title\t\"$(basename "${0}" ): data input\"\t--entry\t--text\t\"${testo}\"\t${dimensione_finestra}\t--entry-text\t\"${parametro}\"\t2>\t/dev/null" ) )"
+				echo "${scelta}" 1>> "${dir_tmp}/${file_tmp}"
+				#############
+				#
+				if [ $(grep "${scelta}" 0< "${dir_tmp}/${file_tmp}" | wc -c ) -gt 0 ]
+					then
+					:
+				else
+					question "Warning: could not write \"\${scelta}\" variable in: \"${dir_tmp}/${file_tmp}\" ...\nShould I continue the same ?"
+					if [ "${conferma}" -eq 0 ] #"Confermato"
+						then
+						:
+					elif [ "${conferma}" -eq 1 ] #"Non confermato"
+						then
+						exit
+					fi
+				fi
+				#
+				exit_if_user_closes_window
+				#
+			done
+		fi #if [ ${quanti_campi} -eq 1 ]
+		#
+	elif [ "${dialogo}" = "Xdialog" ]
+		then
+		#
+		if [ ${quanti_campi} -eq 1 ]
+			then
+			inputbox="--inputbox"
+			if [ ${#} -le 2 ]
+				then
+				#Cioe' c'e' al massimo ${quanti_campi} e L'UNICO ARGOMENTO, quindi va bene ...
+				:
+			elif [ ${#} -gt 2 ] #Quando il campo e' unico, Xdialog NON METTE IL TITOLO sul campo (quindi ci devi mettere SOLO un argomento aggiuntivo, NON due)...
+				then
+				alert_message "Warning, problems in \"${0}\" source :\nwhen you use \"input 1 [args]\", args must be UNIQUE...\nE.g.: input \"1\" \"ciccio\" (NOT: input \"1\" \"ciccio\" \"franco\" )"
+				exit
+			fi
+			#
+		elif [ ${quanti_campi} -gt 1 ]
+			then
+			inputbox="--${quanti_campi}inputsbox"
+			#
+		fi #if [ ${quanti_campi} -eq 1 ]
+		#
+		shift
+		local IFS=$'\n'
+			threshold=${#}
+			args=( $(for (( num=1 ; num <= ${threshold} ; num++ ))
+						do
+						echo "${1}"
+						shift
+					done) )
+			parametri="$(for (( index=0 ; index < ${#args[@]} ; index++ ))
+					do
+					echo -ne "${args[${index}]}\t"
+				done)"
+		local IFS=$'\t\n'
+			#
+			#############
+			scelta=$( ${dialogo} --stdout --separator "\\n" --title "$(basename "${0}" ): data input" ${inputbox} "Please, write data ..." ${dimensione_finestra} ${parametri} 2> /dev/null | grep -v "${string_to_clean}" )
+			echo "${scelta}" 1> "${dir_tmp}/${file_tmp}"
+			#############
+			#
+		local IFS=$' \t\n'
+		if [ "${scelta}" = "$(0< "${dir_tmp}/${file_tmp}" )" ]
+			then
+			:
+		else
+			question "Warning: could not write \"\${scelta}\" variable in: \"${dir_tmp}/${file_tmp}\" ...\nShould I continue the same ?"
+			if [ "${conferma}" -eq 0 ] #"Confermato"
+				then
+				:
+			elif [ "${conferma}" -eq 1 ] #"Non confermato"
+				then
+				exit
+			fi
+		fi #if [ "${scelta}" = "$(0< "${dir_tmp}/${file_tmp}" )" ]
+		#
+		exit_if_user_closes_window
+		#
+	elif [ "${dialogo}" = "dialog" ]
+		then
+		shift #...perche' il primo parametro e': "quanti_campi" ...
+		threshold=${#}
+		local IFS=$'\n'
+			args=( $(for (( num=1 ; num <= ${threshold} ; num++ ))
+					do
+					echo "${1}"
+					shift
+				done) )
+		local IFS=$' \t\n'
+		#
+		if [ ${quanti_campi} -eq 1 ]
+			then
+			#
+			# Questo "if" qui sotto e' per standardizzare col comportamento di Xdialog...
+			if [ ${#args[@]} -eq 1 ]
+				then
+				#Cioe' c'e' al massimo ${quanti_campi} e L'UNICO ARGOMENTO, quindi va bene ...
+				:
+			elif [ ${#args[@]} -gt 1 ] #Quando il campo e' unico, Xdialog NON METTE IL TITOLO sul campo (quindi ci devi mettere SOLO 1 argomento aggiuntivo, NON due o comunque piu' di uno )...
+				then
+				alert_message "Warning, problems in \"${0}\" source :\nwhen you use \"input 1 [args]\", args must be UNIQUE...\nE.g.: input \"1\" \"ciccio\" (NOT: input \"1\" \"ciccio\" \"franco\" )"
+				exit
+			fi
+			#
+			#
+			#
+			testo="" #Perche' il campo e' UNO, e Xdialog con un solo arg NON ha il testo... sai, per standardizzare con Xdialog...
+			parametro="${args[0]}"
+			#
+			#############
+			scelta="$(eval $(local IFS=$'\t' && echo -e "${dialogo}\t--stdout\t${separator}\t\"\\n\"\t--title\t\"$(basename "${0}" ): data input\"\t--inputbox\t\"${testo}\"\t${dimensione_finestra}\t\"${parametro}\"\t2>\t/dev/null" ) )"
+			echo "${scelta}" 1>> "${dir_tmp}/${file_tmp}"
+			#############
+			#
+			if [ $(grep "${scelta}" 0< "${dir_tmp}/${file_tmp}" | wc -c ) -gt 0 ]
+				then
+				:
+			else
+				question "Warning: could not write \"\${scelta}\" variable in: \"${dir_tmp}/${file_tmp}\" ...\nShould I continue the same ?"
+				if [ "${conferma}" -eq 0 ] #"Confermato"
+					then
+					:
+				elif [ "${conferma}" -eq 1 ] #"Non confermato"
+					then
+					exit
+				fi
+			fi
+			#
+			exit_if_user_closes_window
+			#
+		else
+			for (( volta=1 ; volta <= $(( ${quanti_campi} * 2 )) ; volta++,volta++ ))
+				do
+				#
+				testo="${args[$(( ${volta} - 1 ))]}"
+				parametro="${args[${volta}]}"				
+				#
+				#############
+				scelta="$(eval $(local IFS=$'\t' && echo -e "${dialogo}\t--stdout\t${separator}\t\"\\n\"\t--title\t\"$(basename "${0}" ): data input\"\t--inputbox\t\"${testo}\"\t${dimensione_finestra}\t\"${parametro}\"\t2>\t/dev/null" ) )"
+				echo "${scelta}" 1>> "${dir_tmp}/${file_tmp}"
+				#############
+				#
+				if [ $(grep "${scelta}" 0< "${dir_tmp}/${file_tmp}" | wc -c ) -gt 0 ]
+					then
+					:
+				else
+					question "Warning: could not write \"\${scelta}\" variable in: \"${dir_tmp}/${file_tmp}\" ...\nShould I continue the same ?"
+					if [ "${conferma}" -eq 0 ] #"Confermato"
+						then
+						:
+					elif [ "${conferma}" -eq 1 ] #"Non confermato"
+						then
+						exit
+					fi
+				fi
+				#
+				exit_if_user_closes_window
+				#
+			done
+			#
+		fi #if [ ${quanti_campi} -eq 1 ]
+		#
+	fi #if [ "${dialogo}" = "kdialog ${dimensione_finestra}" ]
+	#
+	OUT_STDERR="$(0< "${dir_tmp}/${file_tmp}" )"
+	echo "${OUT_STDERR}" 1>&2
+	#
+	}
+#
+##
+#
+progress()
+	{
+	local FUNCT_NAME="progress"
+	local IFS=$' \t\n'
+	#
+	clean_temp
+	#
+	#########################################
+	# Begin check for user custom geometry...
+	reset_geometry="NO"
+	while [ "${1}" = "--width" -o "${1}" = "-w" -o "${1}" = "--height" -o "${1}" = "-h" ]
+		do
+		w_or_h="$(if [ "${1}" = "--width" -o "${1}" = "-w" ]
+				then
+				echo "width"
+			elif [ "${1}" = "--height" -o "${1}" = "-h" ]
+				then
+				echo "height"
+			fi )"
+		parameter=$(echo -n "${2}" | tr -dc '[[:digit:]]' ) ; [ ${#parameter} -eq 0 ] && break
+		reset_geometry="YES" && eval "local ${w_or_h}=${parameter}" && shift 2
+	done
+	[ "${reset_geometry}" = "YES" ] && \
+	if [ "${mode}" = "kdialog" ]
+		then
+		if [ ${#x_root} -gt 0 -a ${#y_root} -gt 0 ]
+			then
+			local x="+$(( $(( ${x_root} / 2 )) - $(( ${width} / 2 )) ))"
+			local y="+$(( $(( ${y_root} / 2 )) - $(( ${height} / 2 )) ))"
+		fi
+		local dimensione_finestra="--geometry=${width}x${height}${x}${y}"
+		local dimensione_finestra_1="--geometry=${width}x${height}${x}${y}"
+		local dialogo="kdialog ${dimensione_finestra}"
+	elif [ "${mode}" = "zenity" ]
+		then
+		local dimensione_finestra="--width=${width} --height=${height}"
+		local dimensione_finestra_1="--width=${width} --height=${height}"
+	elif [ "${mode}" = "Xdialog" ]
+		then
+		local dimensione_finestra="${width}x${height}"
+		local dimensione_finestra_1="${width}x${height}"
+	fi
+	# End check for user custom geometry...
+	#########################################
+	#
+	steps=100
+	[ ${#} -eq 0 ] && testo="Progress" || testo="${1}"
+	#
+	if [ ${#} -ge 2 ]
+		then
+		if [ $(echo -n "${2}" | tr -dc '[[:digit:]]' | wc -c ) -eq 0 ]
+			then
+			# Il secondo argomento c'e', ma NON e' formato da cifre numeriche...
+			alert_message "$(basename "${0}" ): \n second argument \n\n must be an integer..."
+			return
+			#
+		else
+			quanti_sono_gli_elementi=$(echo -n "${2}" | tr -dc '[[:digit:]]' )
+			steps=${quanti_sono_gli_elementi}
+			#
+			if [ ${quanti_sono_gli_elementi} -eq 0 ]
+				then
+				alert_message "$(basename "${0}" ): \n this progress \n\n \"${testo}\" \n\n has 0 elements..."
+				return
+			fi
+			#
+			percentuale_di_1_elemento_sul_totale_degli_elementi=$(echo "scale=10; 100 / ${quanti_sono_gli_elementi}" | bc -l)
+			if [ $(echo -n "${percentuale_di_1_elemento_sul_totale_degli_elementi}" | cut -d '.' -f 1 | tr -dc '[[:digit:]]' | wc -c) -eq 0 ]
+				then
+				secondo_numero=$(echo -n "${percentuale_di_1_elemento_sul_totale_degli_elementi}" | cut -d '.' -f 2)
+				percentuale_di_1_elemento_sul_totale_degli_elementi="0.${secondo_numero}"
+			fi
+			#
+		fi #if [ $(echo -n "${2}" | tr -dc '[[:digit:]]' | wc -c ) -eq 0 ] # Il secondo argomento c'e', ma NON e' formato da cifre numeriche...
+		#
+	fi #if [ ${#} -ge 2 ]
+	#
+	#
+	#
+	if [ "${dialogo}" = "kdialog ${dimensione_finestra}" ]
+		then
+		qdbus_or_dcop="$(if [ $(echo -n "$(type qdbus 2>/dev/null)" | wc -c ) -gt 0 ]
+					then
+					echo "qdbus" 
+				else
+					echo "dcop"
+				fi )"
+		#
+		# Creazione della finestra...
+		progress_var="$(${dialogo} --title "$(basename "${0}" )" ${progress} "$(echo -e "${testo}" )" ${steps} )" ; ${qdbus_or_dcop} ${progress_var} showCancelButton "true"
+		#
+		# Loop dei valori...
+		conteggio=0
+		until [ "$(${qdbus_or_dcop} ${progress_var} wasCancelled )" = "true" ]
+			do
+			# Leggi lo StdIn...		
+			read standard_input
+			if [ "${standard_input}" = "PROGRESS" ]
+				then
+				#
+				conteggio=$(( ${conteggio} + 1 ))
+				#
+			else
+				#
+				conteggio="${standard_input%%.*}"
+				#
+			fi
+			#
+			# Setta la barra...
+			if [ "${qdbus_or_dcop}" = "qdbus" ]
+				then
+				${qdbus_or_dcop} ${progress_var} Set "" "value" ${conteggio} 1> /dev/null
+				#
+			elif [ "${qdbus_or_dcop}" = "dcop" ]
+				then
+				${qdbus_or_dcop} ${progress_var} setProgress ${conteggio}
+				#
+			fi
+			#
+			# Alla fine esci dal loop...
+			risultato=$(echo "scale=10; ${conteggio} == ${steps}" | bc -l )
+			[ ${risultato} -eq 1 ] && break
+			#
+		done
+		sleep 1 ; ${qdbus_or_dcop} ${progress_var} close
+		#exit_if_user_closes_window
+		#
+	elif [ "${dialogo}" = "zenity" ]
+		then
+		testo_zenity="$(echo "${testo}" | tr -d '<>' )"
+		{
+		while read standard_input
+			do
+			if [ "${standard_input}" = "PROGRESS" ]
+				then
+				index=$(( ${index} + 1 ))
+				percentuale=$(echo "scale=10; ${index} * ${percentuale_di_1_elemento_sul_totale_degli_elementi}" | bc -l )
+				[ "X${percentuale%%.*}" = "X" ] && secondo_numero=${percentuale_di_1_elemento_sul_totale_degli_elementi##*.} && percentuale="0.${secondo_numero}"
+				#
+				echo "${percentuale}"
+				#
+			else
+				#
+				echo "${standard_input}"
+				#
+			fi
+		done
+		sleep 1 
+		} | \
+		\
+		${dialogo} --title "$(basename "${0}" )" ${progress} --text "${testo_zenity}" ${dimensione_finestra_1} ${dimensione_finestra_2} \
+		--auto-close --auto-kill
+		#exit_if_user_closes_window
+		#
+	elif [ "${dialogo}" = "Xdialog" ]
+		then
+		{
+		if [ -z "${testo_new}" ]
+			then
+			testo_new="$(echo "${testo}" | sed s\#'\\n'#'^'#g )"
+			local IFS=$'^'
+				array__testo_new=( ${testo_new} )
+			local IFS=$' \t\n'
+		fi
+		#
+		if [ ${#array__testo_new[@]} -eq 1 ]
+			then
+			while read standard_input
+				do
+				count=$(( ${count} + 1 ))
+				if [ "${standard_input}" = "PROGRESS" ]
+					then
+					index=${count}
+					percentuale=$(echo "scale=10; ${index} * ${percentuale_di_1_elemento_sul_totale_degli_elementi}" | bc -l )
+					[ "X${percentuale%%.*}" = "X" ] && secondo_numero=${percentuale_di_1_elemento_sul_totale_degli_elementi##*.} && percentuale="0.${secondo_numero}"
+					#
+					echo "${percentuale}"
+					#
+				else
+					#
+					echo "${standard_input}"
+					#
+				fi
+				echo "XXX"
+				echo "[Inter-process message #]: ${count} ..."
+				echo "\\n"
+				echo "\\n"
+				echo "${array__testo_new[0]}"
+				echo "XXX"
+			done
+		else
+			while read standard_input
+				do
+				count=$(( ${count} + 1 ))
+				if [ "${standard_input}" = "PROGRESS" ]
+					then
+					index=${count}
+					percentuale=$(echo "scale=10; ${index} * ${percentuale_di_1_elemento_sul_totale_degli_elementi}" | bc -l )
+					[ "X${percentuale%%.*}" = "X" ] && secondo_numero=${percentuale_di_1_elemento_sul_totale_degli_elementi##*.} && percentuale="0.${secondo_numero}"
+					#
+					echo "${percentuale}"
+					#
+				else
+					#
+					echo "${standard_input}"
+					#
+				fi
+				echo "XXX"
+				echo "[Inter-process message #]: ${count} ..."
+				echo "\\n"
+				for (( index=0 ; index < ${#array__testo_new[@]} ; index++ ))
+					do
+					echo "\\n"
+					echo "${array__testo_new[${index}]}"
+				done
+				echo "XXX"
+			done
+		fi 
+		sleep 1 
+		} | \
+		\
+		${dialogo} --title "$(basename "${0}" ): progress" --gauge "[Inter-process message #]: <starting> ...\n\n${testo}"  "${dimensione_finestra_1}" "${dimensione_finestra_2}"
+		exit_if_user_closes_window ; unset testo_new
+		#
+	elif [ "${dialogo}" = "dialog" ]
+		then
+		dim=10
+		{
+		while read standard_input
+			do
+			if [ "${standard_input}" = "PROGRESS" ]
+				then
+				index=$(( ${index} + 1 ))
+				percentuale=$(echo "scale=10; ${index} * ${percentuale_di_1_elemento_sul_totale_degli_elementi}" | bc -l )
+				[ "X${percentuale%%.*}" = "X" ] && secondo_numero=${percentuale_di_1_elemento_sul_totale_degli_elementi##*.} && percentuale="0.${secondo_numero}"
+				#
+				echo "${percentuale%%.*}"
+				#
+			else
+				#
+				echo "${standard_input%%.*}"
+				#
+			fi
+		done
+		sleep 1 
+		} | \
+		\
+		${dialogo} --title "$(basename "${0}" ): progress" ${progress} "${testo}" "${dim}" "${dimensione_finestra_2}"
+		exit_if_user_closes_window
+		#
+	fi
+	}
+#
+##
+#
+adjust()
+	{
+	local FUNCT_NAME="adjust"
+	local IFS=$' \t\n'
+	#
+	#clean_temp #( clean_temp not useful because this function will write in temp file... )
+	#
+	#########################################
+	# Begin check for user custom geometry...
+	reset_geometry="NO"
+	while [ "${1}" = "--width" -o "${1}" = "-w" -o "${1}" = "--height" -o "${1}" = "-h" ]
+		do
+		w_or_h="$(if [ "${1}" = "--width" -o "${1}" = "-w" ]
+				then
+				echo "width"
+			elif [ "${1}" = "--height" -o "${1}" = "-h" ]
+				then
+				echo "height"
+			fi )"
+		parameter=$(echo -n "${2}" | tr -dc '[[:digit:]]' ) ; [ ${#parameter} -eq 0 ] && break
+		reset_geometry="YES" && eval "local ${w_or_h}=${parameter}" && shift 2
+	done
+	[ "${reset_geometry}" = "YES" ] && \
+	if [ "${mode}" = "kdialog" ]
+		then
+		if [ ${#x_root} -gt 0 -a ${#y_root} -gt 0 ]
+			then
+			local x="+$(( $(( ${x_root} / 2 )) - $(( ${width} / 2 )) ))"
+			local y="+$(( $(( ${y_root} / 2 )) - $(( ${height} / 2 )) ))"
+		fi
+		local dimensione_finestra="--geometry=${width}x${height}${x}${y}"
+		local dimensione_finestra_1="--geometry=${width}x${height}${x}${y}"
+		local dialogo="kdialog ${dimensione_finestra}"
+	elif [ "${mode}" = "zenity" ]
+		then
+		local dimensione_finestra="--width=${width} --height=${height}"
+		local dimensione_finestra_1="--width=${width} --height=${height}"
+	elif [ "${mode}" = "Xdialog" ]
+		then
+		local dimensione_finestra="${width}x${height}"
+		local dimensione_finestra_1="${width}x${height}"
+	fi
+	# End check for user custom geometry...
+	#########################################
+	#
+	##
+	#
+	testo="${1-"Please adjust parameter..."}"
+	#
+	start_value=${2-"0"}
+	init_value=${3-"50"}
+	end_value=${4-"100"}
+	#
+	start_value_percent=0
+	end_value_percent=100
+	#
+	num_tot_elementi=$(( ${end_value} - ${start_value} ))
+	diff_values_percent=$(( ${end_value_percent} - ${start_value_percent} ))
+	step=$(echo "scale=2; ${num_tot_elementi} / ${diff_values_percent}" | bc -l )
+	# =>
+	init_value_percent_float=$(echo "scale=2; $(( ${init_value} - ${start_value} )) / ${step}" | bc -l )
+	init_value_percent=$(arrotonda "${init_value_percent_float}" )
+	#
+	#
+	#
+	if [ "${dialogo}" = "kdialog ${dimensione_finestra}" ]
+		then
+		#
+		pre_values="$(for ((int1=${start_value_percent} ; int1 < ${init_value_percent} ; int1++ )); do echo -n "${int1}% " ; done )"
+		post_values="$(for ((int2=${init_value_percent} ; int2 <= ${end_value_percent} ; int2++ )); do echo -n "${int2}% " ; done )"
+		( ${dialogo} --title "$(basename "${0}" ): adjust" --default "${init_value_percent}%" --combobox "${testo}" ${pre_values} ${post_values} \
+		2> /dev/null 1> "${dir_tmp}/${file_tmp}" )
+		#exit_if_user_closes_window
+		exit_code="${?}"
+		#
+	elif [ "${dialogo}" = "zenity" ]
+		then
+		#
+		( ${dialogo} --title "$(basename "${0}" ): adjust" --scale --text "${testo}" --value ${init_value_percent} --min-value ${start_value_percent} --max-value ${end_value_percent} ${dimensione_finestra_1} ${dimensione_finestra_2} \
+		2> /dev/null 1> "${dir_tmp}/${file_tmp}" )
+		#exit_if_user_closes_window
+		exit_code="${?}"
+		#
+	elif [ "${dialogo}" = "Xdialog" ]
+		then
+		#
+		( ${dialogo} --title "$(basename "${0}" ): adjust" --stdout --separator "\\n" ${no_tags} ${icona_Ok} --rangebox "${testo}" ${dimensione_finestra_1} ${dimensione_finestra_2} ${start_value_percent} ${end_value_percent} ${init_value_percent} \
+		2> /dev/null 1> "${dir_tmp}/${file_tmp}" )
+		#exit_if_user_closes_window
+		exit_code="${?}"
+		#
+	elif [ "${dialogo}" = "dialog" ]
+		then
+		#
+		dim=10
+		#
+		{
+		up_with_X='OA' && up_without_X='\[A'
+		right_with_X='OC' && right_without_X='\[C'
+		#
+		down_with_X='OB' && down_without_X='\[B'
+		left_with_X='OD' && left_without_X='\[D'
+		#
+		exit_success=0
+		value_percent=${init_value_percent} && echo ${value_percent}
+		while :
+			do
+			read -n 3 -s key
+			#
+			case ${exit_success} in 
+				"$(echo -n "${key}" | grep -E "(${up_with_X}|${up_without_X}|${right_with_X}|${right_without_X})" &> /dev/null; echo ${?} )" ) 
+					value_percent=$(( ${value_percent} + 1 )) ;;
+				"$(echo -n "${key}" | grep -E "(${down_with_X}|${down_without_X}|${left_with_X}|${left_without_X})" &> /dev/null; echo ${?} )" )
+					value_percent=$(( ${value_percent} - 1 )) ;;
+				* )
+					break ;;
+			esac
+			#
+			echo "${value_percent}"
+		done
+		#
+		echo "${value_percent}" 1> "${dir_tmp}/${file_tmp}" 
+		#sleep 1 
+		} | \
+		\
+		${dialogo} --title "$(basename "${0}" ): adjust (use arrow keys)" ${progress} "${testo}" "${dim}" "${dimensione_finestra_2}"
+		#exit_if_user_closes_window
+		exit_code="${?}"
+		#
+		reset
+		#
+	fi
+	#
+	value_percent=$(tr -dc '[[:digit:]]' 0< "${dir_tmp}/${file_tmp}" )
+	: value_percent
+	#
+	final_value_temp=$(echo "scale=2; ${value_percent} * ${step}" | bc -l )
+	final_value_float=$(echo "scale=2; ${start_value} + ${final_value_temp}" | bc -l )
+	: final_value_float
+	#
+	final_value=$(arrotonda "${final_value_float}" )
+	: final_value
+	#
+	echo "${final_value}" 1> "${dir_tmp}/${file_tmp}" 
+	#
+	#####################################################
+	# Exit code check... 
+	# ( Note:  for this function is better _do not_ use:
+	#          "exit_if_user_closes_window" )
+	uscita="${exit_code}"
+	if [ ${uscita} -ne 0 ]
+		then
+		clean_temp
+		if [ ${uscita} -eq 1 ]
+			then
+        		#
+			#echo "Hai cliccato su \"Cancel\"..."
+			#
+			exit 1
+			#
+		elif [ ${uscita} -eq 255 ]
+			then
+	        	#
+			#echo "Hai chiuso la finestra..."
+			#
+			exit 255
+			#
+		else
+			if [ "${dialogo}" = "zenity" -a ${uscita} -eq 5 ]
+				then
+				# Non far niente: sembra un codice di uscita di zenity legato ai temi...
+				:
+				#
+			else
+				#
+				#
+				alert_message ":( ...Something went wrong..."
+				echo -e "\n:( ...Something went wrong..." 1>&2
+				#
+				exit 1
+				#
+			fi
+			#
+		fi
+		#
+	fi
+	# End exit code check... 
+	#####################################################
+	#
+	OUT_STDERR="${final_value}"
+	echo "${OUT_STDERR}" 1>&2
+	}
+#
+##
+#
+

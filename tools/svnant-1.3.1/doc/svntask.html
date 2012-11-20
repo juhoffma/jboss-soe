@@ -1,0 +1,2147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title></title>
+<meta http-equiv="Content-Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="http://tortoisesvn.tigris.org/branding/css/print.css" media="print">
+<style type="text/css">
+        /*  */
+            @import "http://subclipse.tigris.org/branding/css/tigris.css";
+            @import "http://subclipse.tigris.org/branding/css/inst.css";
+        /*  */
+      </style>
+<style type="text/css">
+        table {
+          border: 1pt solid gray;
+          border-collapse: collapse;
+          width: 70%;
+        }
+        tr, td {
+          border: 1pt solid gray;
+        }
+        tr:hover {
+          background-color: rgb(93%,93%,93%);
+        }
+        td {
+          padding: 2pt;
+        }
+        tr {
+          width: 100%;
+        }
+        h1 {
+          font-size: 200%; text-transform: lowercase; letter-spacing: 3px;
+          margin-bottom: 1em; 
+          padding: 0.66em 0 0.33em 1em;
+          /* background: rgb(85%,85%,70%); */
+        }
+        h2 {
+          background: rgb(85%,85%,70%);
+          margin-bottom: 1em; 
+        }
+        h3 {
+          margin-bottom: 1em; 
+          border:1px solid rgb(85%,85%,70%);
+          color: rgb(55%,55%,40%);
+          padding: 0.66em 0 0.33em 1em;
+          background-color: #f3f1f4;
+        }
+        .sample {
+          font-family: Courier, "Courier New", monospace;
+          background-color: #f3f1f4;
+          margin-left: 10px;
+          margin-right: 10px;
+          padding-top: 3px;
+          padding-bottom: 3px;
+          padding-left: 3px;
+          padding-right: 3px;
+          border:1px dashed black;
+          width: 65%;
+        }
+        .firstcol {
+          width: 15em;
+          max-width: 15em;
+        }
+        .lastcol {
+          width: 6em;
+          max-width: 6em;
+        }
+        p.remark {
+          margin-left: 2em;
+          padding-left: 1em;
+          padding-top: 2pt;
+          padding-bottom: 2pt;
+          padding-right: 2pt;
+          border-style: solid;
+          border-color: red;
+          border-left-width: 4em;
+          border-top-width: 1pt;
+          border-right-width: 1pt;
+          border-bottom-width: 1pt;
+        }
+        table.attributes {
+          margin-bottom: 2em;
+        } 
+        table.nestedelements tr td.firstcol {
+          text-style: bold;
+          width: 10em;
+        }
+        tr.invisiblerow {
+          border: 0pt solid black;
+          padding-top: 3pt;
+          padding-bottom: 3pt;
+        }
+      </style>
+</head>
+<body lang="en-US" dir="ltr">
+<div class="h2" title="Description">
+<a style="visibility: hidden;" name="description"></a>
+<h2>Description</h2>
+    
+    
+<p>This task provides an interface to <a href="http://subversion.tigris.org">Subversion</a> 
+    revision control system that is a compelling replacement for CVS in the open source community.</p>
+      
+    
+<p>The setup of these external tasks can be studied <a href="introduction.html#setup">here</a>.</p>
+      
+  
+</div>
+<div class="h2" title="Parameters">
+<a style="visibility: hidden;" name="pararameters"></a>
+<h2>Parameters</h2>
+
+    
+<p>The following parameters are supported by the <i>svn</i> task:</p>
+
+    
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">username</td><td>
+<p>username that will be used for all nested svn commands.<b>Deprecated. This attribute won't work with SVNANT 1.3.2+ . Use refid for svnSetting instead.</b>
+</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">password</td><td>
+<p>password that will be used for all nested svn commands.<b>Deprecated. This attribute won't work with SVNANT 1.3.2+ . Use refid for svnSetting instead.</b>
+</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">javahl</td><td>
+<p>Set to "false" to use command line client interface instead of JNI JavaHL binding.<b>Deprecated. This attribute won't work with SVNANT 1.3.2+ . Use refid for svnSetting instead.</b>
+</p>
+<br>
+        Default: true</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">svnkit</td><td>
+<p>Set to "false" to use command line client interface instead of SVNKit binding.<b>Deprecated. This attribute won't work with SVNANT 1.3.2+ . Use refid for svnSetting instead.</b>
+</p>
+<br>
+        Default: false</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">dateFormatter</td><td>
+<p>formatter definition used to format/parse dates (e.g. when revision is specified as date).<b>Deprecated. This attribute won't work with SVNANT 1.3.2+ . Use refid for svnSetting instead.</b>
+</p>
+<br>
+        Default: MM/DD/YYYY HH:MM AM_PM</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">dateTimeZone</td><td>
+<p>time zone used to format/parse dates (e.g. when revision is specified as date).<b>Deprecated. This attribute won't work with SVNANT 1.3.2+ . Use refid for svnSetting instead.</b>
+</p>
+<br>
+        Default: local</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">failonerror</td><td>
+<p>Controls whether an error stops the build or is merely reported to the screen.<b>Deprecated. This attribute won't work with SVNANT 1.3.2+ . Use refid for svnSetting instead.</b>
+</p>
+<br>
+        Default: true</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">logFile</td><td>
+<p>Write the output of the commands into the log file instead of the console.</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">refid</td><td>
+<p>If set the configuration for this task is taken from a svnSetting object. Such a settings instance simply provides default values, so they will be overridden in case the corresponding attribute on this task has been set.</p>
+</td><td class="lastcol">No</td>
+</tr>
+</table>
+  
+  
+</div>
+<div class="h2" title="Svn commands specified as nested elements">
+<a style="visibility: hidden;" name="svncommands"></a>
+<h2>Svn commands specified as nested elements</h2>
+<table>
+<tr>
+<td><a href="#add">add</a></td><td><a href="#cat">cat</a></td><td><a href="#checkout">checkout</a></td><td><a href="#cleanup">cleanup</a></td><td><a href="#commit">commit</a></td>
+</tr>
+<tr>
+<td><a href="#copy">copy</a></td><td><a href="#createRepository">createRepository</a></td><td><a href="#delete">delete</a></td><td><a href="#diff">diff</a></td><td><a href="#diffSummarize">diffSummarize</a></td>
+</tr>
+<tr>
+<td><a href="#export">export</a></td><td><a href="#ignore">ignore</a></td><td><a href="#import">import</a></td><td><a href="#info">info</a></td><td><a href="#keywordsadd">keywordsadd</a></td>
+</tr>
+<tr>
+<td><a href="#keywordsremove">keywordsremove</a></td><td><a href="#keywordsset">keywordsset</a></td><td><a href="#list">list</a></td><td><a href="#log">log</a></td><td><a href="#mkdir">mkdir</a></td>
+</tr>
+<tr>
+<td><a href="#move">move</a></td><td><a href="#propdel">propdel</a></td><td><a href="#propget">propget</a></td><td><a href="#propset">propset</a></td><td><a href="#revert">revert</a></td>
+</tr>
+<tr>
+<td><a href="#singleinfo">singleinfo</a></td><td><a href="#status">status</a></td><td><a href="#switch">switch</a></td><td><a href="#update">update</a></td><td><a href="#wcversion">wcversion</a></td>
+</tr>
+</table>
+    
+    
+<div class="h3" title="add">
+<a style="visibility: hidden;" name="add"></a>
+<h3>add</h3>
+
+  
+<p>You can add files and directories to svn repository with nested &lt;add&gt; elements.</p>
+  
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">file</td><td>
+<p>file to add to the repository</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">dir</td><td>
+<p>directory to add to the repository</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">recurse</td><td>
+<p>Set to "false" to operate on a single directory only (applies only when <code>dir</code> attribute is set).</p>
+<br>
+        Default: true</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">force</td><td>
+<p>Set to "true" to check the contents of a directory that is already under source 
+      control for new directories/files (applies only when <code>dir</code> attribute is set).</p>
+<br>
+        Default: false</td><td class="lastcol">No</td>
+</tr>
+</table>
+    
+  
+<p>Parameters specified as nested elements :</p>
+  
+<ul>
+    
+<li>fileset<br>
+    
+<p>Filesets are used to select sets of files to add to the repository.</p>
+    
+<p>
+<b>Note that directories needed to add selected files will be added to the repository 
+    even if they are not selected by the fileset.</b>
+</p>
+</li>
+    
+<li>dirset<br>
+    Dirsets are used to select sets of directories to add.</li>
+  
+</ul>
+
+
+</div>
+    
+<div class="h3" title="cat">
+<a style="visibility: hidden;" name="cat"></a>
+<h3>cat</h3>
+
+  
+<p>Get the content of a file on repository.</p>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">destFile</td><td>
+<p>Name of the destination file</p>
+<br>
+        Default: The name of the file on the url placed in the ant project's basedir</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">url</td><td>
+<p>Url of the file in repository</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+<tr>
+<td class="firstcol">revision</td><td>
+<p>revision to get.Possible values are:
+        <ul>
+          
+<li>a date with the format as specified in dateFormatter attribute</li>
+          
+<li>a revision number</li>
+          
+<li>HEAD, BASE, COMMITED or PREV</li>
+        
+</ul>
+      
+</p>
+<br>
+        Default: HEAD</td><td class="lastcol">No</td>
+</tr>
+</table>
+
+
+</div>
+    
+<div class="h3" title="checkout">
+<a style="visibility: hidden;" name="checkout"></a>
+<h3>checkout</h3>
+
+  
+<p>Check out a working copy from a repository.</p>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">recurse</td><td>
+<p>Set to "false" to operate on single directory only.<b>Don't use this in combination with 'depth' !</b>
+</p>
+<br>
+          Default: true</td><td class="lastcol" rowspan="2">One of these</td>
+</tr>
+<tr>
+<td class="firstcol">depth</td><td>
+<p>Specifies which resources have to be checked out. Following values are legal:
+        <ul>
+          
+<li>empty : Just checkout the top level (empty directory).</li>
+          
+<li>files : Just checkout toplevel files.</li>
+          
+<li>immediates : Checkout toplevel files and directories (unpopulated).</li>
+          
+<li>infinity : Checkout everything.</li>
+        
+</ul>
+        
+<b>Don't use this in combination with 'recurse' !</b>
+</p>
+</td>
+</tr>
+<tr>
+<td class="firstcol">ignoreexternals</td><td>
+<p>If set to <code>true</code> svn externals will be skipped.<b>Only in combination with 'depth' !</b>
+</p>
+<br>
+        Default: false</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">force</td><td>
+<p>Enforces the execution of the checkout commands.<b>Only in combination with 'depth' !</b>
+</p>
+<br>
+        Default: false</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">url</td><td>
+<p>url to checkout from</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+<tr>
+<td class="firstcol">destPath</td><td>
+<p>destination directory</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+<tr>
+<td class="firstcol">revision</td><td>
+<p>revision to checkout.Possible values are:
+        <ul>
+          
+<li>a date with the format as specified in dateFormatter attribute</li>
+          
+<li>a revision number</li>
+          
+<li>HEAD, BASE, COMMITED or PREV</li>
+        
+</ul>
+      
+</p>
+<br>
+        Default: HEAD</td><td class="lastcol">No</td>
+</tr>
+</table>
+
+
+</div>
+    
+<div class="h3" title="cleanup">
+<a style="visibility: hidden;" name="cleanup"></a>
+<h3>cleanup</h3>
+
+  
+<p>cleanup your working copy</p>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">dir</td><td>
+<p>directory to cleanup</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+</table>
+
+
+</div>
+    
+<div class="h3" title="commit">
+<a style="visibility: hidden;" name="commit"></a>
+<h3>commit</h3>
+
+  
+<p>Send changes from your working copy to the repository.</p>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">file</td><td>
+<p>file to commit</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">recurse</td><td>
+<p>Set to "false" to operate on single directory only. Apply only when <code>dir</code> attribute is set.</p>
+<br>
+        Default: true</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">dir</td><td>
+<p>directory to commit</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">message</td><td>
+<p>commit message</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+</table>
+
+  
+<p>Parameters specified as nested elements :</p>
+  
+<ul>
+    
+<li>fileset<br>
+    Filesets are used to select sets of files to commit.</li>
+    
+<li>dirset<br>
+    Dirsets are used to select sets of directories to commit.</li>
+  
+</ul>
+
+
+</div>
+    
+<div class="h3" title="copy">
+<a style="visibility: hidden;" name="copy"></a>
+<h3>copy</h3>
+
+  
+<p>Duplicate something in working copy or repository, remembering history.</p>
+  
+<p>source and destination can each be either a working copy (WC) path or URL:</p>
+  
+<ul>
+    
+<li>WC-&gt;WC: copy and schedule for addition (with history)</li>
+    
+<li>WC-&gt;URL: immediately commit a copy of WC to URL</li>
+    
+<li>URL-&gt;WC: check out URL into WC, schedule for addition</li>
+    
+<li>URL-&gt;URL: complete server-side copy;  used to branch &amp; tag</li>
+  
+</ul>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">srcPath</td><td>
+<p>source path</p>
+</td><td class="lastcol" rowspan="2">One of these</td>
+</tr>
+<tr>
+<td class="firstcol">srcUrl</td><td>
+<p>source url</p>
+</td>
+</tr>
+<tr>
+<td class="firstcol">destPath</td><td>
+<p>destination path</p>
+</td><td class="lastcol" rowspan="2">One of these</td>
+</tr>
+<tr>
+<td class="firstcol">destUrl</td><td>
+<p>destination url</p>
+</td>
+</tr>
+<tr>
+<td class="firstcol">message</td><td>
+<p>commit message</p>
+</td><td class="lastcol">when destUrl is set</td>
+</tr>
+<tr>
+<td class="firstcol">revision</td><td>
+<p>revision to copy from (when srcUrl is set).Possible values are:
+        <ul>
+          
+<li>a date with the format as specified in dateFormatter attribute</li>
+          
+<li>a revision number</li>
+          
+<li>HEAD, BASE, COMMITED or PREV</li>
+        
+</ul>
+      
+</p>
+<br>
+        Default: HEAD</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">makeParents</td><td>
+<p>Create parents first (only useful for copies from srcUrl to destUrl).</p>
+<br>
+        Default: false</td><td class="lastcol">No</td>
+</tr>
+</table>
+
+
+</div>
+    
+<div class="h3" title="createRepository">
+<a style="visibility: hidden;" name="createRepository"></a>
+<h3>createRepository</h3>
+
+  
+<p>Create a new, empty repository at path.</p>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">path</td><td>
+<p>Path where to create the new repository</p>
+</td><td class="lastcol">yes</td>
+</tr>
+</table>
+
+  
+<p>Example:</p>
+  
+<pre class="sample">
+    &lt;createRepository path="repository"/&gt;
+  </pre>
+
+
+</div>
+    
+<div class="h3" title="delete">
+<a style="visibility: hidden;" name="delete"></a>
+<h3>delete</h3>
+
+  
+<p>If run on a working copy target, the item is scheduled for deletion upon the next commit. 
+  Files, and directories that have not been committed, are immediately removed from the working 
+  copy.</p>
+  
+  
+<p>The command will not remove targets that are, or contain, unversioned or modified items; 
+  use the force attribute to override this behaviour.</p>
+  
+<p>If run on an url, the item is deleted from the repository via an immediate commit.</p>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">file</td><td>
+<p>file to delete</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">url</td><td>
+<p>url to delete</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">dir</td><td>
+<p>directory to delete</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">message</td><td>
+<p>commit message</p>
+</td><td class="lastcol">when url attribute is set</td>
+</tr>
+<tr>
+<td class="firstcol">force</td><td>
+<p>forces the deletion</p>
+<br>
+        Default: false</td><td class="lastcol">No</td>
+</tr>
+</table>
+  
+  
+<p>Parameters specified as nested elements :</p>
+  
+<ul>
+    
+<li>fileset<br>
+    Filesets are used to select sets of files to delete.</li>
+    
+<li>dirset<br>
+    Dirsets are used to select sets of directories to delete.</li>
+  
+</ul>
+
+
+</div>
+    
+<div class="h3" title="diff">
+<a style="visibility: hidden;" name="diff"></a>
+<h3>diff</h3>
+
+  
+<p>Display the differences between two paths (oldPath and newPath) or two urls (oldUrl and newUrl).</p>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">oldPath</td><td>
+<p>the old path</p>
+<br>
+          Default: .</td><td class="lastcol" rowspan="2">One of these</td>
+</tr>
+<tr>
+<td class="firstcol">oldUrl</td><td>
+<p>the old url</p>
+<br>
+          Default: .</td>
+</tr>
+<tr>
+<td class="firstcol">oldTargetRevision</td><td>
+<p>the revision used for the comparison of the old repository</p>
+<br>
+        Default: BASE or, if oldUrl is set, to HEAD</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">newPath</td><td>
+<p>the new path</p>
+<br>
+          Default: .</td><td class="lastcol" rowspan="2">One of these</td>
+</tr>
+<tr>
+<td class="firstcol">newUrl</td><td>
+<p>the new url</p>
+<br>
+          Default: .</td>
+</tr>
+<tr>
+<td class="firstcol">newTargetRevision</td><td>
+<p>the revision used for the comparison of the new repository</p>
+<br>
+        Default: The current working version or, if newUrl is set, to HEAD</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">outFile</td><td>
+<p>the destination file for the diff result</p>
+<br>
+        Default: patch</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">recurse</td><td>
+<p>Set to "false" to operate on single directory only</p>
+<br>
+        Default: true</td><td class="lastcol">No</td>
+</tr>
+</table>
+
+  
+<p>Example:</p>
+  
+<p>diff between BASE and current working version</p>
+  
+<pre class="sample">
+    &lt;diff 
+        oldPath="workingcopy/diffTest/file.txt" 
+        outFile="workingcopy/diffTest/patch.txt"
+    /&gt; 
+  </pre>
+
+
+</div>
+    
+<div class="h3" title="diffSummarize">
+<a style="visibility: hidden;" name="diffSummarize"></a>
+<h3>diffSummarize</h3>
+
+  
+<p>TO BE DONE</p>
+
+  
+
+
+</div>
+    
+<div class="h3" title="export">
+<a style="visibility: hidden;" name="export"></a>
+<h3>export</h3>
+
+  
+<ol>
+  
+    
+<li>Exports a clean directory tree from the repository specified by <code>srcurl</code>, 
+    at revision <code>revision</code> if it is given, otherwise at HEAD, into <code>destPath</code>.</li>
+    
+    
+<li>Exports a clean directory tree from the working copy specified by <code>srcPath</code> into 
+    <code>destPath</code>. all local changes will be preserved, but files not under revision control 
+    will not be copied.
+    </li>
+    
+  
+</ol>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">srcUrl</td><td>
+<p>source url to export from</p>
+</td><td class="lastcol" rowspan="2">One of these</td>
+</tr>
+<tr>
+<td class="firstcol">srcPath</td><td>
+<p>source path to export from</p>
+</td>
+</tr>
+<tr>
+<td class="firstcol">destPath</td><td>
+<p>destination path</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+<tr>
+<td class="firstcol">force</td><td>
+<p>Allows to overwrite an already existing destination.</p>
+<br>
+        Default: false</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">revision</td><td>
+<p>revision of the source url to export from.Possible values are:
+        <ul>
+          
+<li>a date with the format as specified in dateFormatter attribute</li>
+          
+<li>a revision number</li>
+          
+<li>HEAD, BASE, COMMITED or PREV</li>
+        
+</ul>
+      
+</p>
+<br>
+        Default: HEAD</td><td class="lastcol">No</td>
+</tr>
+</table>
+
+
+</div>
+    
+<div class="h3" title="ignore">
+<a style="visibility: hidden;" name="ignore"></a>
+<h3>ignore</h3>
+
+  
+<p>Add a given file or a pattern to the ignored files list (modifies svn:ignore property)</p>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">file</td><td>
+<p>file to ignore</p>
+</td><td class="lastcol" rowspan="2">One of these</td>
+</tr>
+<tr>
+<td class="firstcol">dir</td><td>
+<p>directory to ignore</p>
+</td>
+</tr>
+<tr>
+<td class="firstcol">pattern</td><td>
+<p>pattern to add to svn:ignore on the directory. Only when dir is set.</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+<tr>
+<td class="firstcol">recurse</td><td>
+<p>Set to "true" to add the pattern recursively to directories (only when dir is set).</p>
+<br>
+        Default: false</td><td class="lastcol">No</td>
+</tr>
+</table>
+  
+  
+<p>Examples:</p>
+  
+<pre class="sample">
+    &lt;ignore 
+        dir="workingcopy/ignoreTest/dir1" 
+        pattern="*.ignore" 
+        recurse="true"
+    /&gt;
+  </pre>
+
+
+</div>
+    
+<div class="h3" title="import">
+<a style="visibility: hidden;" name="import"></a>
+<h3>import</h3>
+
+  
+<p>Commit an unversioned file or tree into the repository.</p>
+  
+<p>Recursively commit a copy of <code>path</code> to <code>url</code>.</p>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">path</td><td>
+<p>source path to export from</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+<tr>
+<td class="firstcol">url</td><td>
+<p>source url to import to</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+<tr>
+<td class="firstcol">newEntry</td><td>
+<p>If set, copy top-level contents of <code>path</code> into <code>url</code> directly.  
+      Otherwise, create <code>newEntry</code> underneath <code>url</code> and begin copy there.</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">message</td><td>
+<p>commit message</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+<tr>
+<td class="firstcol">recurse</td><td>
+<p>Set to "false" to operate on single directory only.</p>
+<br>
+        Default: true</td><td class="lastcol">No</td>
+</tr>
+</table>
+
+
+</div>
+    
+<div class="h3" title="info">
+<a style="visibility: hidden;" name="info"></a>
+<h3>info</h3>
+
+  
+<p>Gets the information from the repository for a file, directory or url and sets the values to ant properties.</p>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">target</td><td>
+<p>Directory or file to gather the information about.</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+<tr>
+<td class="firstcol">propPrefix</td><td>
+<p>Prefix to use for the properties.</p>
+<br>
+        Default: svn.info.</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">verbose</td><td>
+<p></p>
+<br>
+        Default: false</td><td class="lastcol">No</td>
+</tr>
+</table>
+
+  
+<p>The task sets the following properties (prefix applied accordingly):</p>
+  
+<table>
+    
+<tr>
+      
+<td>Property</td>
+      <td>Description</td>
+    
+</tr>
+    
+<tr>
+      
+<td>path</td>
+      <td>Always</td>
+    
+</tr>
+    
+<tr>
+      
+<td>name</td>
+      <td>For files only</td>
+    
+</tr>
+    
+<tr>
+      
+<td>url</td>
+      <td>Always</td>
+    
+</tr>
+    
+<tr>
+      
+<td>repourl</td>
+      <td>Always</td>
+    
+</tr>
+    
+<tr>
+      
+<td>repouuid</td>
+      <td>Always</td>
+    
+</tr>
+    
+<tr>
+      
+<td>rev</td>
+      <td>Always</td>
+    
+</tr>
+    
+<tr>
+      
+<td>nodekind</td>
+      <td>Always</td>
+    
+</tr>
+    
+<tr>
+      
+<td>schedule</td>
+      <td>Always</td>
+    
+</tr>
+    
+<tr>
+      
+<td>author</td>
+      <td>Always</td>
+    
+</tr>
+    
+<tr>
+      
+<td>lastRev</td>
+      <td>Always</td>
+    
+</tr>
+    
+<tr>
+      
+<td>lastDate</td>
+      <td>Always</td>
+    
+</tr>
+    
+<tr>
+      
+<td>lastTextUpdate</td>
+      <td>For files only</td>
+    
+</tr>
+    
+<tr>
+      
+<td>lastPropUpdate</td>
+      <td>For files only</td>
+    
+</tr>
+    
+<tr>
+      
+<td>checksum</td>
+      <td>For files only</td>
+    
+</tr>
+  
+</table>
+
+
+</div>
+    
+<div class="h3" title="keywordsadd">
+<a style="visibility: hidden;" name="keywordsadd"></a>
+<h3>keywordsadd</h3>
+
+  
+<p>Keywordsadd add some keywords to be substituted on the given files. Present keywords are not modified.</p>
+  
+<p>The attributes are the same than for keywordsset command.</p>
+
+
+</div>
+    
+<div class="h3" title="keywordsremove">
+<a style="visibility: hidden;" name="keywordsremove"></a>
+<h3>keywordsremove</h3>
+
+  
+<p>Keywordsadd remove some keywords to be substituted on the given files. Other present keywords are not modified.</p>
+  
+<p>The attributes are the same than for keywordsset command.</p>
+
+
+</div>
+    
+<div class="h3" title="keywordsset">
+<a style="visibility: hidden;" name="keywordsset"></a>
+<h3>keywordsset</h3>
+
+  
+<p>Keywordsset controls which keywords will be substituted on the given files. Valid keywords are:</p>
+  
+<ul>
+    
+<li>URL, HeadURL : The URL for the head version of the object.</li>
+    
+<li>Author, LastChangedBy : The last person to modify the file.</li>
+    
+<li>Date, LastChangedDate : The date/time the object was last modified.</li>
+    
+<li>Rev, LastChangedRevision : The last revision the object changed.</li>
+    
+<li>Id : A compressed summary of the previous.</li>
+  
+</ul>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">file</td><td>
+<p>File for which keywords will be substituted (specify nested filesets alternatively).</p>
+</td><td class="lastcol" rowspan="2">One of these</td>
+</tr>
+<tr>
+<td class="firstcol">dir</td><td>
+<p>All files in this directory will have their keywords substituted (recursively). 
+        Specify nested filesets alternatively.</p>
+</td>
+</tr>
+<tr>
+<td class="firstcol">keywords</td><td>
+<p>The keywords to substitute on the given files.</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">HeadURL</td><td>
+<p>Set to "true" the keyword to substitute it on the given file.</p>
+</td><td class="lastcol" rowspan="9">One of these</td>
+</tr>
+<tr>
+<td class="firstcol">URL</td><td>
+<p>Set to "true" the keyword to substitute it on the given file.</p>
+</td>
+</tr>
+<tr>
+<td class="firstcol">Author</td><td>
+<p>Set to "true" the keyword to substitute it on the given file.</p>
+</td>
+</tr>
+<tr>
+<td class="firstcol">LastChangedBy</td><td>
+<p>Set to "true" the keyword to substitute it on the given file.</p>
+</td>
+</tr>
+<tr>
+<td class="firstcol">Date</td><td>
+<p>Set to "true" the keyword to substitute it on the given file.</p>
+</td>
+</tr>
+<tr>
+<td class="firstcol">LastChangedDate</td><td>
+<p>Set to "true" the keyword to substitute it on the given file.</p>
+</td>
+</tr>
+<tr>
+<td class="firstcol">Rev</td><td>
+<p>Set to "true" the keyword to substitute it on the given file.</p>
+</td>
+</tr>
+<tr>
+<td class="firstcol">LastChangedRevision</td><td>
+<p>Set to "true" the keyword to substitute it on the given file.</p>
+</td>
+</tr>
+<tr>
+<td class="firstcol">Id</td><td>
+<p>Set to "true" the keyword to substitute it on the given file.</p>
+</td>
+</tr>
+</table>
+
+  
+<p>Parameters specified as nested elements:</p>
+  
+<ul>
+    
+<li>fileset<br>
+    Filesets are used to select the files where the keywords will be set.</li>
+    
+<li>dirset<br>
+    Dirsets are used to select the directories where the keywords will be set.</li>
+  
+</ul>
+
+
+</div>
+    
+<div class="h3" title="list">
+<a style="visibility: hidden;" name="list"></a>
+<h3>list</h3>
+
+  
+<p>lists the content of a repository</p>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">delimiter</td><td>
+<p>The delimiter to be used for separation of the list.</p>
+<br>
+        Default: ,</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">listDirs</td><td>
+<p>If enabled directory entries will be listed.</p>
+<br>
+        Default: true</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">listFiles</td><td>
+<p>If enabled file entries will be listed.</p>
+<br>
+        Default: true</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">onlyNames</td><td>
+<p>If enabled only the names will be listed otherwise the complete urls.</p>
+<br>
+        Default: false</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">property</td><td>
+<p>Property which will receive the resulting value.</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+<tr>
+<td class="firstcol">recurse</td><td>
+<p>Allows to list the complete subtree if true. Use it carefully.</p>
+<br>
+        Default: false</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">revision</td><td>
+<p>The revision used to get the listing from.</p>
+<br>
+        Default: HEAD</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">url</td><td>
+<p>The URL which content shall be listed.</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+</table>
+
+
+</div>
+    
+<div class="h3" title="log">
+<a style="visibility: hidden;" name="log"></a>
+<h3>log</h3>
+
+  
+<p>Display commit log messages.</p>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">path</td><td>
+<p>path to create</p>
+</td><td class="lastcol" rowspan="2">One of these</td>
+</tr>
+<tr>
+<td class="firstcol">url</td><td>
+<p>url to create</p>
+</td>
+</tr>
+<tr>
+<td class="firstcol">startRevision</td><td>
+<p>start revision</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+<tr>
+<td class="firstcol">stopRevision</td><td>
+<p>stop revision</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+<tr>
+<td class="firstcol">destFile</td><td>
+<p>destination file</p>
+<br>
+        Default: The name of the file on the url placed in the ant project's basedir.</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">asXml</td><td>
+<p>Output log as xml.</p>
+<br>
+        Default: true</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">changedpathes</td><td>
+<p>Include changed paths in the log.</p>
+<br>
+        Default: false</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">stopOnCopy</td><td>
+<p>Useful for determining branch points.</p>
+<br>
+        Default: true</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">limit</td><td>
+<p>Restricts output to the first n log messages.</p>
+<br>
+        Default: All in the range</td><td class="lastcol">No</td>
+</tr>
+</table>
+
+
+</div>
+    
+<div class="h3" title="mkdir">
+<a style="visibility: hidden;" name="mkdir"></a>
+<h3>mkdir</h3>
+
+  
+<p>Create a new directory under revision control.</p>
+  
+<p>If target is a working copy path the directory is scheduled for addition in the working 
+  copy.  If target is an url the directory is created in the repository via an immediate commit.</p>
+  
+<p>In both cases all the intermediate directories must already exist.</p>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">path</td><td>
+<p>path to create</p>
+</td><td class="lastcol" rowspan="2">One of these</td>
+</tr>
+<tr>
+<td class="firstcol">url</td><td>
+<p>url to create</p>
+</td>
+</tr>
+<tr>
+<td class="firstcol">message</td><td>
+<p>commit message</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+<tr>
+<td class="firstcol">makeParents</td><td>
+<p>Create parents first.</p>
+<br>
+        Default: false</td><td class="lastcol">No</td>
+</tr>
+</table>
+
+
+</div>
+    
+<div class="h3" title="move">
+<a style="visibility: hidden;" name="move"></a>
+<h3>move</h3>
+
+  
+<p>Move/rename something in working copy or repository.</p>
+  
+<p>Source and destination can both be working copy (WC) paths or URLs:</p>
+  
+<ul>
+    
+<li>WC  -&gt; WC:   move and schedule for addition (with history).</li>
+    
+<li>URL -&gt; URL:  complete server-side rename.</li>
+  
+</ul>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">srcPath</td><td>
+<p>source path</p>
+</td><td class="lastcol" rowspan="2">One of these</td>
+</tr>
+<tr>
+<td class="firstcol">srcUrl</td><td>
+<p>source url</p>
+</td>
+</tr>
+<tr>
+<td class="firstcol">destPath</td><td>
+<p>destination path</p>
+</td><td class="lastcol" rowspan="2">One of these</td>
+</tr>
+<tr>
+<td class="firstcol">destUrl</td><td>
+<p>destination url</p>
+</td>
+</tr>
+<tr>
+<td class="firstcol">message</td><td>
+<p>commit message</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+</table>
+
+
+</div>
+    
+<div class="h3" title="propdel">
+<a style="visibility: hidden;" name="propdel"></a>
+<h3>propdel</h3>
+
+  
+<p>Remove a property from files or dirs.</p>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">path</td><td>
+<p>path of the file or directory on which to delete the property</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+<tr>
+<td class="firstcol">name</td><td>
+<p>name of the property to delete</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+<tr>
+<td class="firstcol">recurse</td><td>
+<p>if set, property will be removed recursively</p>
+<br>
+        Default: false</td><td class="lastcol">No</td>
+</tr>
+</table>
+
+
+</div>
+    
+<div class="h3" title="propget">
+<a style="visibility: hidden;" name="propget"></a>
+<h3>propget</h3>
+
+  
+<p>Get a property from a file or a directory.</p>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">path</td><td>
+<p>path of the file or directory on which to get the property.</p>
+</td><td class="lastcol" rowspan="2">One of these</td>
+</tr>
+<tr>
+<td class="firstcol">url</td><td>
+<p>url of the file or directory in repository on which to get the property</p>
+</td>
+</tr>
+<tr>
+<td class="firstcol">name</td><td>
+<p>name of the property to get</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+<tr>
+<td class="firstcol">property</td><td>
+<p>the name of the property to set with the value of the svn property</p>
+</td><td class="lastcol" rowspan="2">One of these</td>
+</tr>
+<tr>
+<td class="firstcol">file</td><td>
+<p>file that will contain the value of the property</p>
+</td>
+</tr>
+</table>
+
+  
+<p>Example:</p>
+  
+<pre class="sample">
+    &lt;propget 
+        path="workingcopy/propTest/file.png" 
+        name="svn:mime-type" 
+        property="propTest.mimeType"
+    /&gt;
+  </pre>
+  
+
+</div>
+    
+<div class="h3" title="propset">
+<a style="visibility: hidden;" name="propset"></a>
+<h3>propset</h3>
+
+  
+<p>Set a property on files or dirs.</p>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">path</td><td>
+<p>path of the file or directory on which to set the property.</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+<tr>
+<td class="firstcol">name</td><td>
+<p>name of the property to set.</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+<tr>
+<td class="firstcol">value</td><td>
+<p>the value of the property</p>
+</td><td class="lastcol" rowspan="2">One of these</td>
+</tr>
+<tr>
+<td class="firstcol">file</td><td>
+<p>the file that will be used as a value</p>
+</td>
+</tr>
+<tr>
+<td class="firstcol">recurse</td><td>
+<p>if set, property will be set recursively</p>
+</td><td class="lastcol">No</td>
+</tr>
+</table>
+
+  
+<p>
+<i>Note:</i> svn recognizes the following special versioned properties but will store any 
+  arbitrary properties set:</p>
+  
+<ul>
+    
+<li>svn:ignore : A newline separated list of file patterns to ignore.</li>
+    
+<li>svn:keywords : Keywords to be expanded.  Valid keywords are:<br>
+        
+<ul>
+          
+<li>URL, HeadURL : The URL for the head version of the object.</li>
+          
+<li>Author, LastChangedBy : The last person to modify the file.</li>
+          
+<li>Date, LastChangedDate : The date/time the object was last modified.</li>
+          
+<li>Rev, LastChangedRevision : The last revision the object changed.</li>
+          
+<li>Id : A compressed summary of the previous 4 keywords.</li>
+        
+</ul>
+    
+</li>
+    
+<li>svn:executable : If present, make the file executable. This property cannot be set on a 
+    directory.  A non-recursive attempt will fail, and a recursive attempt will set the property 
+    only on the file children of the directory.</li>
+    
+<li>svn:eol-style : One of 'native', 'LF', 'CR', 'CRLF'.</li>
+    
+<li>svn:mime-type : The mimetype of the file.  Used to determine whether to merge the file, 
+    and how to serve it from Apache.<br>
+    A mimetype beginning with 'text/' (or an absent mimetype) is treated as text. 
+    Anything else is treated as binary.</li>
+    
+<li>svn:externals : A newline separated list of module specifiers, each of which consists 
+    of a relative directory path, optional revision flags, and an URL.  For example:<br>
+    foo http://example.com/repos/zig<br>
+    foo/bar -r 1234 http://example.com/repos/zag</li>
+  
+</ul>
+
+
+</div>
+    
+<div class="h3" title="revert">
+<a style="visibility: hidden;" name="revert"></a>
+<h3>revert</h3>
+
+  
+<p>Restore pristine working copy file (undo most local edits).</p>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">file</td><td>
+<p>file to revert</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">dir</td><td>
+<p>directory to revert</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">recurse</td><td>
+<p>Set to "false" to operate on a single directory only (applies only when dir attribute 
+      is set or a dirset is provided).</p>
+<br>
+        Default: false</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">revision</td><td>
+<p>revision.Possible values are:
+        <ul>
+          
+<li>a date with the format as specified in dateFormatter attribute</li>
+          
+<li>a revision number</li>
+          
+<li>HEAD, BASE, COMMITED or PREV</li>
+        
+</ul>
+      
+</p>
+<br>
+        Default: HEAD</td><td class="lastcol">No</td>
+</tr>
+</table>
+
+  
+<p>Parameters specified as nested elements:</p>
+  
+<ul>
+    
+<li>fileset<br>
+    Filesets are used to select sets of files to revert.</li>
+    
+<li>dirset<br>
+    Dirsets are used to select sets of directories to revert.</li>
+  
+</ul>
+
+
+</div>
+    
+<div class="h3" title="singleinfo">
+<a style="visibility: hidden;" name="singleinfo"></a>
+<h3>singleinfo</h3>
+
+  
+<p>Similar to the <a href="#info">info</a> command with the difference that this one 
+  allows to request a specific information.</p>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">target</td><td>
+<p>Directory or file to gather the information about.</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+<tr>
+<td class="firstcol">property</td><td>
+<p>The property that will be set. It will be set to an empty string if the information 
+      could not be gathered.</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+<tr>
+<td class="firstcol">request</td><td>
+<p>Specifies the information that has to be retrieved. Following values are supported:
+      <ul>
+        
+<li>path</li>
+        
+<li>name</li>
+        
+<li>url</li> 
+        
+<li>repourl</li> 
+        
+<li>repouuid</li> 
+        
+<li>revision</li> 
+        
+<li>nodekind</li> 
+        
+<li>schedule</li> 
+        
+<li>author</li> 
+        
+<li>lastRevision</li> 
+        
+<li>lastDate</li> 
+        
+<li>lastTextUpdate</li> 
+        
+<li>lastPropUpdate</li> 
+        
+<li>checksum</li> 
+      
+</ul>
+      
+</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+</table>
+
+
+</div>
+    
+<div class="h3" title="status">
+<a style="visibility: hidden;" name="status"></a>
+<h3>status</h3>
+
+  
+<p>Get the status of working copy files and directories.</p>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">path</td><td>
+<p>path of the file or directory</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+<tr>
+<td class="firstcol">textStatusProperty</td><td>
+<p>Name of the property to set to the status of the item.Allowed values:
+      <ul>
+        
+<li>non-svn</li> 
+        
+<li>normal : no modifications</li> 
+        
+<li>added</li>
+        
+<li>missing : item is missing (removed by non-svn command)</li> 
+        
+<li>incomplete</li> 
+        
+<li>deleted</li> 
+        
+<li>replaced</li> 
+        
+<li>modified</li> 
+        
+<li>merged</li> 
+        
+<li>conflicted</li> 
+        
+<li>obstructed</li> 
+        
+<li>ignored</li> 
+        
+<li>external</li> 
+        
+<li>unversioned</li> 
+      
+</ul>
+      
+</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">propStatusProperty</td><td>
+<p>Name of the property to set to the status of the item propertiesAllowed values:
+        <li>normal : no modifications</li> 
+        
+<li>conflicted</li> 
+        
+<li>modified</li> 
+      
+</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">revisionProperty</td><td>
+<p>Name of the property to set to the revision of the item (or "" if unversioned)</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">lastChangedRevisionProperty</td><td>
+<p>Name of the property to set to the last changed revision of the item (or "" if unversioned)</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">lastChangedDateProperty</td><td>
+<p>Name of the property to set to the last changed date of the item (or "" if unversioned). 
+      The date is formatted according to task's "dateFormatter"</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">lastCommitAuthorProperty</td><td>
+<p>Name of the property to set to the last commit author (or "" if unversioned).</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">urlProperty</td><td>
+<p>Name of the property to set to the url of the item.</p>
+</td><td class="lastcol">No</td>
+</tr>
+</table>
+  
+  
+<p>Example:</p>
+  
+<pre class="sample">
+    &lt;status 
+        path="workingcopy/statusTest/added.txt" 
+        textStatusProperty="testStatus.textStatus" 
+        propStatusProperty="testStatus.propStatus" 
+        lastChangedRevisionProperty="testStatus.lastCommitRevision" 
+        revisionProperty="testStatus.revision" 
+        lastCommitAuthorProperty="testStatus.lastCommitAuthor"
+    /&gt;
+  </pre>
+
+
+</div>
+    
+<div class="h3" title="switch">
+<a style="visibility: hidden;" name="switch"></a>
+<h3>switch</h3>
+
+  
+<p>Update the working copy to mirror a new URL within the repository. This behaviour is 
+  similar to 'svn update', and is the way to move a working copy to a branch or tag within the 
+  same repository.</p>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">path</td><td>
+<p>The working copy to switch to the given url.</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+<tr>
+<td class="firstcol">url</td><td>
+<p>The url to switch to.</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+<tr>
+<td class="firstcol">recurse</td><td>
+<p>Set to "false" to operate on a single directory only.</p>
+<br>
+        Default: false</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">revision</td><td>
+<p>revision.Possible values are:
+        <ul>
+          
+<li>a date with the format as specified in dateFormatter attribute</li>
+          
+<li>a revision number</li>
+          
+<li>HEAD, BASE, COMMITED or PREV</li>
+        
+</ul>
+      
+</p>
+<br>
+        Default: HEAD</td><td class="lastcol">No</td>
+</tr>
+</table>
+  
+  
+<p>Example:</p>
+  
+<pre class="sample">
+    &lt;switch path="workingcopy/switchTest" url="${urlRepos}/switchTestBranch"/&gt; 
+  </pre>
+  
+
+</div>
+    
+<div class="h3" title="update">
+<a style="visibility: hidden;" name="update"></a>
+<h3>update</h3>
+
+  
+<p>Bring changes from the repository into the working copy. If no revision given, bring 
+  working copy up-to-date with HEAD rev. Else synchronize working copy to revision.</p>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">file</td><td>
+<p>file to update</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">dir</td><td>
+<p>directory to update</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">recurse</td><td>
+<p>Set to "false" to operate on a single directory only (applies only if
+      <code>dir</code> has been set or a <code>dirset</code> has been given).</p>
+<br>
+        Default: false</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">revision</td><td>
+<p>revision.Possible values are:
+        <ul>
+          
+<li>a date with the format as specified in dateFormatter attribute</li>
+          
+<li>a revision number</li>
+          
+<li>HEAD, BASE, COMMITED or PREV</li>
+        
+</ul>
+      
+</p>
+<br>
+        Default: HEAD</td><td class="lastcol">No</td>
+</tr>
+</table>
+
+  
+<p>Parameters specified as nested elements :</p>
+  
+<ul>
+    
+<li>fileset<br>
+    Filesets are used to select sets of files to update.</li>
+    
+<li>dirset<br>
+    Dirsets are used to select sets of directories to update.</li>
+  
+</ul>
+
+
+</div>
+    
+<div class="h3" title="wcversion">
+<a style="visibility: hidden;" name="wcversion"></a>
+<h3>wcversion</h3>
+
+  
+<p>Retrieves a state of the working copy. Similar to the svn's utility svnversion, 
+  just providing more. Crawls the working copy and retrieves the maximum revision number, 
+  revision range if workingCopy is mixed etc.</p>
+
+  
+<table class="attributes">
+<tr>
+<th class="firstcol">Attribute</th><th>Description</th><th class="lastcol">Required</th>
+</tr>
+<tr>
+<td class="firstcol">path</td><td>
+<p>a path to the working copy</p>
+</td><td class="lastcol">Yes</td>
+</tr>
+<tr>
+<td class="firstcol">prefix</td><td>
+<p>a string which will be prefixed to output properties set/filled by this command</p>
+</td><td class="lastcol">No</td>
+</tr>
+<tr>
+<td class="firstcol">processUnversioned</td><td>
+<p>flag whether presence of unversioned resoures should be treated as changes</p>
+<br>
+        Default: false</td><td class="lastcol">No</td>
+</tr>
+</table>
+
+  
+<p>The command fill set the following properties: (with optional prefix applied)</p>
+  
+  
+<table>
+    
+<tr>
+      
+<td>Property</td>
+      <td>Description</td>
+    
+</tr>
+    
+<tr>
+      
+<td>repository.url</td>
+      <td>URL of the repository of the working copy root</td>
+    
+</tr>
+    
+<tr> 
+      
+<td>repository.path</td>
+      <td>path in the repository</td>
+    
+</tr>
+    
+<tr> 
+      
+<td>revision.max</td> 
+      <td>the highest revision number in the working copy</td>
+    
+</tr>
+    
+<tr> 
+      
+<td>revision.max-with-flags</td> 
+      <td>the highest revision number in the working copy plus flags (M - modified, X - mixed)</td>
+    
+</tr> 
+    
+<tr> 
+      
+<td>revision.range</td>
+      <td>the revision range (in mixed wc), similar to svnversion format. (e.g. 1000:1010MX)</td> 
+    
+</tr> 
+    
+<tr> 
+      
+<td>committed.max</td> 
+      <td>the highest 'last committed revision'</td> 
+    
+</tr> 
+    
+<tr> 
+      
+<td>committed.max-with-flags</td>
+      <td>the highest 'last committed revision' plus flags (M, X)</td> 
+    
+</tr> 
+    
+<tr> 
+      
+<td>modified</td>
+      <td>set to "true" if working copy is modified, property not set otherwise</td> 
+    
+</tr> 
+    
+<tr> 
+      
+<td>mixed</td>
+      <td>set to "true" if working copy is mixed, property not set otherwise</td> 
+    
+</tr> 
+  
+</table>
+  
+  
+<p>An example of the properties that would be set in a sample working copy (with modifications, 
+  with prefix="svn."):</p>
+
+  
+<code>svn.repository.url -&gt; https://server/repos/branches/1.2.x</code>
+<br>
+  
+<code>svn.repository.path -&gt; /repos/branches/1.2.x</code>
+<br>
+  
+<code>svn.revision.max -&gt; 676</code>
+<br>
+  
+<code>svn.revision.max-with-flags -&gt; 676M</code>
+<br>
+  
+<code>svn.revision.range -&gt; 676M</code>
+<br>
+  
+<code>svn.committed.max -&gt; 651</code>
+<br>
+  
+<code>svn.committed.max-with-flags -&gt; 651M</code>
+<br>
+  
+<code>svn.modified -&gt; true</code>
+<br>
+  
+
+</div>
+    
+  
+</div>
+<div class="h2" title="Examples">
+<a style="visibility: hidden;" name="examples"></a>
+<h2>Examples</h2>
+  
+    
+<pre class="sample">
+      &lt;svn javahl="${javahl}"&gt;
+          &lt;checkout url="${urlRepos}" destPath="workingcopy" /&gt;
+      &lt;/svn&gt;
+    </pre>
+    
+<p>checkouts a working copy from repository</p>
+  
+    
+<pre class="sample">
+      &lt;svn&gt;
+          &lt;delete&gt;
+              &lt;fileset dir="workingcopy/deleteTest"&gt;
+                  &lt;include name="**/*.del"/&gt;
+              &lt;/fileset&gt;
+          &lt;/delete&gt;
+          &lt;commit message="commit deleted files" dir="workingcopy/deleteTest"/&gt;
+      &lt;/svn&gt;    
+    </pre>
+    
+<p>deletes some files from repository (and commit changes)</p>
+  
+    
+<pre class="sample">
+      &lt;svn&gt;
+          &lt;add dir="workingcopy/propTest"/&gt;
+          &lt;commit message="propTest added" dir="workingcopy/propTest"/&gt;
+          &lt;propset 
+              path="workingcopy/propTest/file.png" 
+              name="svn:mime-type" 
+              value="image/png"
+          /&gt;
+          &lt;propset 
+              path="workingcopy/propTest/file.png" 
+              name="myPicture" 
+              file="workingcopy/propTest/icon.gif"
+          /&gt;
+      &lt;/svn&gt;
+    </pre>
+    
+<p>add my_repos/propTest to repository and set two properties on file.png</p>
+    
+<p>subversion command line interface is used (javahl="false").</p>
+  
+    
+<pre class="sample">
+      &lt;svnSetting
+          svnkit="true"
+          username="bingo"
+          password="bongo"
+          id="svn.settings"
+      /&gt;
+      ...
+      &lt;svn refid="svn.settings" failonerror="false"&gt;
+        ...
+      &lt;/svn&gt;
+    </pre>
+    
+<p>Declaration of basic subversion settings and their reference. This little snippet 
+    also shows that a setting can be overriden in the end (failonerror).</p>
+  
+  
+</div>
+</body>
+</html>
