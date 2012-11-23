@@ -10,7 +10,7 @@
     <property name="build.rpm.dir" value="${build.root}/rpm"/>
     <property name="build.checkout.dir" value="${build.root}/checkout"/>
     <property name="build.profile.dir" value="${build.root}/profiles"/>
-    <property name="default-modules.dir" value="${basedir}/default-modules"/>
+    <property name="default-modules.dir" value="${basedir}/blueprints/default-modules"/>
 
     <!--  Relative properties based on checkout.home from build.properties -->
     <dirname property="checkout.home" file="${basedir}"/>
@@ -92,7 +92,7 @@
     </target>
 
     <target name="build-all" description="Build RPMs out of all configured profiles" depends="checkout">
-        <foreach target="setup-profile" param="profile.dir" inheritall="true" inheritrefs="true">
+        <foreach target="prepare-profile" param="profile.dir" inheritall="true" inheritrefs="true">
             <path>
                 <dirset dir="${basedir}/profiles">
                     <include name="*"/>
@@ -163,22 +163,26 @@
             </else>
         </if>
 
-        <!-- Let us process the copied standalone.xml and insert the stuff from the configuration directories -->
-        <foreach target="merge-standalone-xml" param="subsystem.name" inheritall="true" inheritrefs="true">
-            <path>
-                <dirset dir="${basedir}/profiles/${profile.name}/configuration">
-                    <include name="*"/>
-                </dirset>
-            </path>
-        </foreach>
+        <!-- Copy the Microsoft JDBC Driver (jtds) in this case if we find the marker file -->
+        <if>
+            <!--suppress AntResolveInspection -->
+            <available file="${profile.dir}/enable-jtds"/>
+            <then>
+                <property name="enable.jtds" value="true"/>
+                <copy todir="${build.profile.dir}/${profile.name}/modules">
+                    <fileset dir="${default-modules.dir}/jtds"/>
+                </copy>
+            </then>
+        </if>
 
         <!-- Copy the Microsoft JDBC Driver (jtds) in this case if we find the marker file -->
         <if>
             <!--suppress AntResolveInspection -->
             <available file="${profile.dir}/enable-mssql"/>
             <then>
+                <property name="enable.mssql" value="true"/>
                 <copy todir="${build.profile.dir}/${profile.name}/modules">
-                    <fileset dir="${default-modules.dir}/jtds"/>
+                    <fileset dir="${default-modules.dir}/microsoft"/>
                 </copy>
             </then>
         </if>
@@ -188,6 +192,7 @@
             <!--suppress AntResolveInspection -->
             <available file="${profile.dir}/enable-mysql"/>
             <then>
+                <property name="enable.mysql" value="true"/>
                 <copy todir="${build.profile.dir}/${profile.name}/modules">
                     <fileset dir="${default-modules.dir}/mysql"/>
                 </copy>
@@ -199,11 +204,15 @@
             <!--suppress AntResolveInspection -->
             <available file="${profile.dir}/enable-oracle"/>
             <then>
+                <echo>Enabling Oracle</echo>
+                <property name="enable.oracle" value="true"/>
                 <copy todir="${build.profile.dir}/${profile.name}/modules">
                     <fileset dir="${default-modules.dir}/oracle"/>
                 </copy>
+
             </then>
         </if>
+
 
         <!-- Copy the profile specific run.conf and jboss.properties to the configuration directory -->
         <!-- run.conf will be renamed to ${profile.name}_run.conf during copy -->
@@ -215,6 +224,7 @@
                 <filter token="PROFILE_NAME" value="${profile.name}"/>
                 <filter token="JBOSS_LOG_DIR" value="${jboss.log.dir}"/>
                 <filter token="CONFIG_DIR" value="${eap.profile.directory}"/>
+                <filter token="JAVA_HOME" value="${soe.java.home}" />
             </filterset>
         </copy>
         <!--suppress AntResolveInspection -->
@@ -228,6 +238,21 @@
                 <filter token="STORAGE_DIR" value="${common.app.storage.dir}"/>
             </filterset>
         </copy>
+        <!--suppress AntResolveInspection -->
+        <copy file="${basedir}/blueprints/custom.properties"
+              tofile="${build.profile.dir}/${profile.name}/configuration/custom.properties">
+            <filterset>
+                <filter token="PROFILE_NAME" value="${profile.name}"/>
+                <filter token="JBOSS_LOG_DIR" value="${jboss.log.dir}"/>
+                <filter token="CONFIG_DIR" value="${eap.profile.directory}"/>
+                <filter token="APP_LOG_DIR" value="${common.app.log.dir}"/>
+                <filter token="STORAGE_DIR" value="${common.app.storage.dir}"/>
+            </filterset>
+        </copy>
+
+        <!-- Copy the general Information Textfile to the RPM -->
+        <copy file="${basedir}/blueprints/INFO.txt"
+              tofile="${build.profile.dir}/${profile.name}/INFO.txt"/>
 
         <!--suppress AntResolveInspection -->
         <copy file="${basedir}/blueprints/jboss-as-standalone.sh"
@@ -248,6 +273,20 @@
 
         <!-- convert all line endings to unix format -->
         <fixcrlf srcdir="${build.profile.dir}/${profile.name}" includes="**/*" eol="lf" />
+
+        <!-- Before copying in the configuration overrides for each profile, we have to create the configuration
+   by merging the blueprint subsystems, which contain the externalized content and the things that
+   are configured for performance enhancements -->
+        <antcall target="merge-default-standalone-xml" inheritall="true" inheritrefs="true" />
+
+        <!-- Let us process the copied standalone.xml and insert the stuff from the configuration directories -->
+        <foreach target="merge-standalone-xml" param="subsystem.name" inheritall="true" inheritrefs="true">
+            <path>
+                <dirset dir="${basedir}/profiles/${profile.name}/configuration">
+                    <include name="*"/>
+                </dirset>
+            </path>
+        </foreach>
 
         <!-- Now that we have everything in place, it is time to investigate the standalone.xml that is -->
         <!-- copied to the profile, and mangle it the way we want it.                                   -->
@@ -270,7 +309,7 @@
                         <filter token="RUNAS_USER" value="${runas.user}"/>
                         <filter token="RUNAS_GROUP" value="${runas.group}"/>
                         <filter token="COUNTRY_CODE" value="de"/>
-                        <filter token="JDK_HOME" value="${java.home}"/>
+                        <filter token="JDK_HOME" value="${soe.java.home}"/>
                         <filter token="JBOSS_LOG_DIR" value="${jboss.log.dir}"/>
                         <filter token="APP_LOG_DIR" value="${common.app.log.dir}"/>
                         <filter token="UPSTREAM_RELEASE" value="${profile.requires.upstream}" />
@@ -305,8 +344,8 @@
 
     </target>
 
-    <target name="build-single" description="Creates a single RPM of a profile. The Profile name has to be provided as a parameter (-Dprofile.dir=[profiledirectory)">
-        <fail message="You have to define the profile directory when calling this script! -Dprofile.dir=[profiledirectory]" unless="profile.dir" />
+    <target name="build-single" description="Creates a single RPM. Needs parameter (-Dprofile.dir=[profiles/ApplicationName])">
+        <fail message="You have to define the profile directory when calling this script! -Dprofile.dir=[profiles/ApplicationName]" unless="profile.dir" />
         <antcall target="prepare-profile" inheritall="true" inheritrefs="true" />
     </target>
 
@@ -338,10 +377,30 @@
     </target>
 
     <target name="yumdownloader" depends="setup-build-env">
+
+        <!-- download the RPM Package -->
         <exec executable="/usr/bin/yumdownloader">
             <arg value="--destdir=${build.checkout.dir}" />
             <arg value="${config.files.rpm.pkg.name}" />
         </exec>
+
+        <!-- Extract standalone.xml files and properties -->
+        <exec executable="/usr/local/bin/bash">
+            <arg value="-c"/>
+            <arg value="(cd ${build.checkout.dir} &amp;&amp; rpm2cpio ${config.files.rpm.pkg.name}*.rpm | cpio -ivd '*standalone*.xml' '*.properties')"/>
+        </exec>
+
+        <!-- Copy them to the same location as the checkout would place them -->
+        <mkdir dir="${build.checkout.dir}/${master.revision.name}/standalone/configuration" />
+        <copy todir="${build.checkout.dir}/${master.revision.name}/standalone/configuration">
+            <fileset dir="${build.checkout.dir}/etc/jbossas/standalone">
+                <include name="*.xml"/>
+                <include name="*.properties"/>
+            </fileset>
+        </copy>
+
+        <!-- Delete the Directory, as it is not needed anymore -->
+        <delete dir="${build.checkout.dir}/etc" />
     </target>
 
     <target name="merge-standalone-xml">
@@ -350,11 +409,35 @@
 
         <!-- Let us process the copied standalone.xml and insert the stuff from the configuration directories-->
         <xmltask source="${build.profile.dir}/${profile.name}/configuration/standalone.xml"
-                 dest="${build.profile.dir}/${profile.name}/configuration//standalone-parsed.xml">
+                 dest="${build.profile.dir}/${profile.name}/configuration/standalone-parsed.xml">
             <replace path="//*[contains(namespace-uri(), '${subsystem}') and local-name()='subsystem']" withfile="${basedir}/profiles/${profile.name}/configuration/${subsystem}/configuration.xml" />
         </xmltask>
 
         <move file="${build.profile.dir}/${profile.name}/configuration//standalone-parsed.xml"
               tofile="${build.profile.dir}/${profile.name}/configuration/standalone.xml" />
     </target>
+
+    <target name="merge-default-standalone-xml">
+        <!-- Let us process the copied standalone.xml and insert the stuff from the configuration directories-->
+        <xmltask source="${build.profile.dir}/${profile.name}/configuration/standalone.xml"
+                 dest="${build.profile.dir}/${profile.name}/configuration/standalone-parsed.xml">
+            <replace path="//*[contains(namespace-uri(), 'deployment-scanner') and local-name()='subsystem']" withfile="${basedir}/blueprints/subsystems/deployment-scanner.xml" />
+            <replace path="//*[contains(namespace-uri(), 'logging') and local-name()='subsystem']" withfile="${basedir}/blueprints/subsystems/logging.xml" />
+            <replace path="//*[contains(namespace-uri(), 'mail') and local-name()='subsystem']" withfile="${basedir}/blueprints/subsystems/mail.xml" />
+            <replace path="//*[contains(namespace-uri(), 'threads') and local-name()='subsystem']" withfile="${basedir}/blueprints/subsystems/threads.xml" />
+            <replace path="//*[contains(namespace-uri(), 'web:') and local-name()='subsystem']" withfile="${basedir}/blueprints/subsystems/web.xml" />
+            <replace path="//*[local-name()='socket-binding-group']" withfile="${basedir}/blueprints/other/socket-binding-group.xml" />
+            <remove  path="//*[local-name()='datasource']" />
+            <remove  path="//*[local-name()='driver' and @module='com.h2database.h2']" />
+
+            <insert path="//*[local-name()='drivers']" file="${basedir}/blueprints/other/jtds.xml" if="enable.jtds" />
+            <insert path="//*[local-name()='drivers']" file="${basedir}/blueprints/other/mssql.xml" if="enable.mssql" />
+            <insert path="//*[local-name()='drivers']" file="${basedir}/blueprints/other/mysql.xml" if="enable.mysql" />
+            <insert path="//*[local-name()='drivers']" file="${basedir}/blueprints/other/oracle.xml" if="enable.oracle" />
+        </xmltask>
+
+        <move file="${build.profile.dir}/${profile.name}/configuration/standalone-parsed.xml"
+              tofile="${build.profile.dir}/${profile.name}/configuration/standalone.xml" />
+    </target>
+
 </project>
