@@ -82,15 +82,15 @@ This Directory contains the RPM Specfiles which are used to build the RPM Packag
 Files
 =====
 
-    ├── build.properties
+    ├── build.properties.template
     ├── build.xml
     ├── macros.xml
     ├── rpm-sign.exp
     ├── runbuild.sh
     └── sat-upload.sh
 
-build.properties
-----------------
+build.properties.template
+-------------------------
 Main configuration file for the build environment. This SOE is capable to handle the official RHN RPM Channel as well as
 the jboss-eap6-master Version, which is checked into the RVCS. The build process uses svnant to check out the Master Revision
 I have tried to add comments as explaining as possible.
