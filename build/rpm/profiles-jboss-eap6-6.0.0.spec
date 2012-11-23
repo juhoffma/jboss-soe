@@ -11,7 +11,7 @@
 %define projectName @RELEASE_NAME@
 %define profile_name @PROFILE_NAME@
 
-%define pkg_name jboss-eap-%{profile_name}
+%define pkg_name jboss-eap6-%{profile_name}
 %define pkg_version @PACKAGE_VERSION@
 %define pkg_release @PACKAGE_RELEASE@
 %define pkg_root @INSTALL_ROOT@
@@ -50,7 +50,7 @@ Requires: @UPSTREAM_RELEASE@ @UPSTREAM_RELEASE_VERSION@
 AutoProv: off
 Provides: %{name} = %{version}
 # virtual pkg name
-Provides: jboss-eap-%{profile_name}
+Provides: jboss-eap6-%{profile_name}
 
 %description
 JBoss Enterprise Application Platform %{version} Software for Bosch.
@@ -64,6 +64,7 @@ The name of profile provided by this package is : "@PROFILE_NAME@"
 %install
 mkdir -p $RPM_BUILD_ROOT%{cfg_basedir}
 cp -r * $RPM_BUILD_ROOT%{cfg_basedir}
+mkdir -p $RPM_BUILD_ROOT%{cfg_basedir}/log
 %{__rm} -rf %{_tmppath}/profile.filelist
 find $RPM_BUILD_ROOT%{cfg_basedir} -type d | sed '{s#'${RPM_BUILD_ROOT}'##;}' | sed '{s#\(^.*$\)#%dir "\1"#g;}' >>%{_tmppath}/profile.filelist
 find $RPM_BUILD_ROOT%{cfg_basedir} -type f | sed '{s#'${RPM_BUILD_ROOT}'##;}' | sed '{s#\(^.*$\)#"\1"#g;}' >>%{_tmppath}/profile.filelist

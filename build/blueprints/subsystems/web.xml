@@ -1,0 +1,13 @@
+<subsystem xmlns="urn:jboss:domain:web:1.1" default-virtual-server="default-host" native="false">
+    <connector enable-lookups="false" enabled="true"
+               executor="http-executor"
+               max-connections="200"
+               max-post-size="2048" max-save-post-size="4096"
+               name="http" protocol="HTTP/1.1"
+               proxy-name="proxy" proxy-port="8081"
+               redirect-port="8443" scheme="http"
+               secure="false" socket-binding="http" />
+    <virtual-server name="default-host" enable-welcome-root="false">
+        <alias name="localhost"/>
+    </virtual-server>
+</subsystem>

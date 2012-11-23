@@ -1,0 +1,9 @@
+<subsystem xmlns="urn:jboss:domain:threads:1.1">
+    <bounded-queue-thread-pool name="http-executor">
+        <core-threads count="10"  />
+        <queue-length count="10" />
+        <max-threads count="10"  />
+        <keepalive-time time="10" unit="seconds" />
+
+    </bounded-queue-thread-pool>
+</subsystem>

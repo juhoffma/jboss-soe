@@ -45,7 +45,9 @@
           <root url="jar://$MODULE_DIR$/../tools/apache-ant-1.8.4/lib/xmltask.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="file://$USER_HOME$/Downloads/xmltask" />
+        </SOURCES>
       </library>
     </orderEntry>
   </component>

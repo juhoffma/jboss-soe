@@ -1,8 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="68224216-dce8-4c72-a318-61ccbffc1311" name="Default" comment="initial README in the root Directory">
-      <change type="MOVED" beforePath="$PROJECT_DIR$/build/README.md" afterPath="$PROJECT_DIR$/README.md" />
+    <list default="true" id="68224216-dce8-4c72-a318-61ccbffc1311" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/blueprints/default-modules/jtds/net/sourceforge/jtds/main/jtds-1.3.0.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/blueprints/default-modules/microsoft/com/microsoft/jdbc/main/sqljdbc4.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/blueprints/default-modules/mysql/com/mysql/jdbc/main/mysql-connector-java-5.1.7-bin.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/blueprints/default-modules/oracle/com/oracle/ojdbc6/main/ojdbc16_11g-2-0-1.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/profiles/AFW1_template/enable-oracle" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/profiles/VWMS/enable-oracle" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/profiles/VWMS/properties/run.conf" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/blueprints/INFO.txt" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/blueprints/custom.properties" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/blueprints/default-modules/jtds/net/sourceforge/jtds/main/module.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/blueprints/default-modules/microsoft/com/microsoft/jdbc/main/module.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/blueprints/default-modules/mysql/com/mysql/jdbc/main/module.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/blueprints/default-modules/oracle/com/oracle/ojdbc6/main/module.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/blueprints/other/jtds.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/blueprints/other/mssql.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/blueprints/other/mysql.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/blueprints/other/oracle.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/blueprints/other/socket-binding-group.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/blueprints/subsystems/deployment-scanner.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/blueprints/subsystems/logging.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/blueprints/subsystems/mail.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/blueprints/subsystems/threads.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/blueprints/subsystems/web.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/profiles/VWMS/properties/jboss.properties" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build/rpm/profiles-jboss-eap6-6.0.0.spec" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/build/profiles/AFW1_template/enable-mssql" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/build/rpm/profiles-jboss-eap-6.0.0.spec" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/build.iml" afterPath="$PROJECT_DIR$/build/build.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/macros.xml" afterPath="$PROJECT_DIR$/build/macros.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/profiles/ACTIVITYMANAGER2/configuration/security/configuration.xml" afterPath="$PROJECT_DIR$/build/profiles/ACTIVITYMANAGER2/configuration/security/configuration.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soe.iws" afterPath="$PROJECT_DIR$/soe.iws" />
     </list>
     <ignored path="soe.iws" />
@@ -62,62 +91,7 @@
     <favorites_list name="soe" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="build.properties" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/build/build.properties">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="88" column="0" selection-start="4018" selection-end="4018" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="build.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/build/build.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="214" column="36" selection-start="9974" selection-end="9974" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="configuration.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/build/profiles/ACTIVITYMANAGER2/configuration/security/configuration.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="35" column="78" selection-start="1030" selection-end="1871" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="build-test.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/build/build-test.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="16" column="97" selection-start="270" selection-end="1141" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="standalone.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/jboss-eap6-master/standalone/configuration/standalone.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="jboss-as-standalone.sh" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/build/blueprints/jboss-as-standalone.sh">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="38" column="22" selection-start="1032" selection-end="1032" vertical-scroll-proportion="0.032258064">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf />
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -180,6 +154,9 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="PackagesPane">
+        <subPane />
+      </pane>
       <pane id="Scope">
         <subPane subId="Project Files">
           <PATH>
@@ -201,9 +178,6 @@
             </PATH_ELEMENT>
           </PATH>
         </subPane>
-      </pane>
-      <pane id="PackagesPane">
-        <subPane />
       </pane>
       <pane id="ProjectPane">
         <subPane>
@@ -250,8 +224,8 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="MemberChooser.showClasses" value="true" />
     <property name="GoToClass.includeLibraries" value="false" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -319,6 +293,25 @@
         <option name="RakeTask" enabled="false" />
       </method>
     </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method>
+        <option name="AntTarget" enabled="false" />
+        <option name="BuildArtifacts" enabled="false" />
+        <option name="Make" enabled="true" />
+        <option name="Maven.BeforeRunTask" enabled="false" />
+        <option name="RakeTask" enabled="false" />
+      </method>
+    </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <module name="" />
@@ -345,25 +338,6 @@
       <envs />
       <properties />
       <listeners />
-      <method>
-        <option name="AntTarget" enabled="false" />
-        <option name="BuildArtifacts" enabled="false" />
-        <option name="Make" enabled="true" />
-        <option name="Maven.BeforeRunTask" enabled="false" />
-        <option name="RakeTask" enabled="false" />
-      </method>
-    </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
       <method>
         <option name="AntTarget" enabled="false" />
         <option name="BuildArtifacts" enabled="false" />
@@ -790,7 +764,15 @@
       <created>1353484812282</created>
       <updated>1353484812282</updated>
     </task>
-    <option name="localTasksCounter" value="76" />
+    <task id="LOCAL-00076" summary="initial README in the root Directory">
+      <created>1353490285989</created>
+      <updated>1353490285990</updated>
+    </task>
+    <task id="LOCAL-00077" summary="latest Version from BOSCH">
+      <created>1353688970968</created>
+      <updated>1353688970968</updated>
+    </task>
+    <option name="localTasksCounter" value="78" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -811,10 +793,10 @@
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32938388" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="CSS-X-Fire" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2571839" sideWeight="0.37184596" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2571839" sideWeight="0.26427624" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2571839" sideWeight="0.28950864" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2571839" sideWeight="0.39707837" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="SVN Repositories" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32941177" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
@@ -862,7 +844,7 @@
     <option name="SHOW_VCS_ERROR_NOTIFICATIONS" value="true" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="initial README in the root Directory" />
+    <option name="LAST_COMMIT_MESSAGE" value="latest Version from BOSCH" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -875,7 +857,6 @@
     <option name="UPDATE_GROUP_BY_CHANGELIST" value="false" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
-    <MESSAGE value="- updated the tar mechanism to prefix the content with profile.name&#10;- updated the spec file to setup the project with the profile name" />
     <MESSAGE value="- made sure to rename the files to run.conf and jboss.properties, that is mapping todays changes to the old way" />
     <MESSAGE value="- made the upstream version configurable" />
     <MESSAGE value="- added the ability to create a single RPM from the profile" />
@@ -900,6 +881,7 @@
     <MESSAGE value="bugfixes" />
     <MESSAGE value="initial checkin from Customer" />
     <MESSAGE value="initial README in the root Directory" />
+    <MESSAGE value="latest Version from BOSCH" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -931,16 +913,6 @@
         <state line="110" column="42" selection-start="3144" selection-end="3165" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/build/default-modules/jtds/net/sourceforge/jtds/main/module.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="0" selection-start="239" selection-end="285" vertical-scroll-proportion="0.18057664" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/build/default-modules/mysql/com/mysql/jdbc/main/module.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="60" selection-start="105" selection-end="136" vertical-scroll-proportion="0.051593322" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/build/rpm/base-jboss-eap-6.0.0.spec">
       <provider selected="true" editor-type-id="text-editor">
         <state line="91" column="69" selection-start="2855" selection-end="2855" vertical-scroll-proportion="0.0" />
@@ -956,11 +928,6 @@
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/build/rpm/profiles-jboss-eap-6.0.0.spec">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="76" column="43" selection-start="2477" selection-end="2477" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/jboss-eap6-master/bin/init.d/jboss-as.conf">
       <provider selected="true" editor-type-id="text-editor">
         <state line="5" column="23" selection-start="145" selection-end="156" vertical-scroll-proportion="0.0" />
@@ -971,24 +938,11 @@
         <state line="59" column="40" selection-start="2602" selection-end="2602" vertical-scroll-proportion="0.38501972" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/build/build.properties">
+    <entry file="file://$PROJECT_DIR$/build/blueprints/jboss-as-standalone.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="88" column="0" selection-start="4018" selection-end="4018" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/build/build.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="214" column="36" selection-start="9974" selection-end="9974" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/build/profiles/ACTIVITYMANAGER2/configuration/security/configuration.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="35" column="78" selection-start="1030" selection-end="1871" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/build/build-test.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="97" selection-start="270" selection-end="1141" vertical-scroll-proportion="0.0" />
+        <state line="38" column="22" selection-start="1032" selection-end="1032" vertical-scroll-proportion="0.032258064">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/jboss-eap6-master/standalone/configuration/standalone.xml">
@@ -996,9 +950,30 @@
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/build/blueprints/jboss-as-standalone.sh">
+    <entry file="file://$PROJECT_DIR$/build/build-test.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="38" column="22" selection-start="1032" selection-end="1032" vertical-scroll-proportion="0.032258064">
+        <state line="16" column="97" selection-start="270" selection-end="1141" vertical-scroll-proportion="0.516129">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build/profiles/ACTIVITYMANAGER2/configuration/security/configuration.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="35" column="78" selection-start="1030" selection-end="1871" vertical-scroll-proportion="0.65481174">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build/build.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="214" column="36" selection-start="9765" selection-end="9765" vertical-scroll-proportion="0.032258064">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build/build.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="88" column="0" selection-start="3985" selection-end="3985" vertical-scroll-proportion="0.5292887">
           <folding />
         </state>
       </provider>

@@ -1,0 +1,3 @@
+<driver name="oracle" module="com.oracle.ojdbc6">
+    <xa-datasource-class>oracle.jdbc.xa.client.OracleXADataSource</xa-datasource-class>
+</driver>
