@@ -29,7 +29,9 @@ This Directory contains a general README with instructions on how to use the fil
 jboss-eap-master
 ----------------
 Self explanatory... This is the JBoss EAP 6.0.0 Master Revision. This Repository is only used to build the base RPM
-Package, and provides the default standalone.xml, standalone-ha.xml, standalone-full.xml, standalone-full-ha.xml.
+Package, and provides the default standalone.xml, standalone-ha.xml, standalone-full.xml, standalone-full-ha.xml. This
+has to be downloaded and extracted from the Customer Support Portal (http://access.redhat.com). And you need a valid
+ subscription for it.
 
 tools
 -----
