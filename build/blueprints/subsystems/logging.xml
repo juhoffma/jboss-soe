@@ -14,13 +14,6 @@
         <append value="true"/>
     </periodic-rotating-file-handler>
 
-    <async-handler name="ASYNC">
-        <queue-length value="64"/>
-        <subhandlers>
-            <handler name="APP"/>
-            <handler name="FILE"/>
-        </subhandlers>
-    </async-handler>
     <logger category="com.arjuna">
         <level name="WARN"/>
     </logger>

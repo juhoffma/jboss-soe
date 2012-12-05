@@ -1,5 +1,16 @@
 Build Directory
 ===============
+
+Prerequisites
+-------------
+
+You need the following packages installed for it to work
+
+    yum -y install svn yum-utils install java-1.7.0-openjdk-devel.x86_64
+    yum -y groupinstall jboss-eap6
+
+the groupinstall is only necessary on the target system (The System on which you want to install the profile).
+
 This Directory holds the magic stuff. This is where you configure your profiles, modules, etc. Let me explain this layout.
 
     .
