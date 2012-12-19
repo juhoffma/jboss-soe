@@ -1,6 +1,11 @@
 #!/bin/bash
 BUILD_DIR=`dirname $0`
 
+HOST="Please enter the Host"
+USER="Please enter the Host"
+CHANNEL_5="Please enter the name of the Channel to upload to"
+CHANNEL_6="Please enter the name of the Channel to upload to"
+
 EASYBASHGUI_VERSION=1.3.1
 source ${BUILD_DIR}/../tools/EasyBashGUI_${EASYBASHGUI_VERSION}/easybashgui_${EASYBASHGUI_VERSION}
 
@@ -25,9 +30,9 @@ case $UPLOAD in
 
 	for rpm in `find ${RELEASE_DIR} -name *.rpm`;do
 		echo "uploading $rpm now on SOE RH 5 repo..."
-		rhnpush --server si0bos32 --force -u jboss-soe-upload -p ${SECRET} -c bosch-ciafw1-soe ${rpm}
+		rhnpush --server ${HOST} --force -u ${USER} -p ${SECRET} -c ${CHANNEL_5} ${rpm}
 		echo "uploading $rpm now on SOE RH 6 repo..."
-		rhnpush --server si0bos32 --force -u jboss-soe-upload -p ${SECRET} -c bosch-ciafw1-soe-rh6 ${rpm}
+		rhnpush --server ${HOST} --force -u ${USER} -p ${SECRET} -c ${CHANNEL_6} ${rpm}
 	done
 	echo "uploading done."
 	;;
@@ -63,9 +68,9 @@ case $UPLOAD in
 	
 	for rpm in ${choice}; do
 		echo "uploading $rpm now on SOE RH 5 repo..."
-		rhnpush --server si0bos32 --force -u jboss-soe-upload -p ${SECRET} -c bosch-ciafw1-soe `find ${RELEASE_DIR} -name ${rpm}`
+		rhnpush --server ${HOST} --force -u ${USER} -p ${SECRET} -c ${CHANNEL_5} `find ${RELEASE_DIR} -name ${rpm}`
 		echo "uploading $rpm now on SOE RH 6 repo..."
-		rhnpush --server si0bos32 --force -u jboss-soe-upload -p ${SECRET} -c bosch-ciafw1-soe-rh6 `find ${RELEASE_DIR} -name ${rpm}`
+		rhnpush --server ${HOST} --force -u ${USER} -p ${SECRET} -c ${CHANNEL_6} `find ${RELEASE_DIR} -name ${rpm}`
 	done
 	echo "uploading done."
 	;;

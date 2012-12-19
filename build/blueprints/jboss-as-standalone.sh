@@ -79,11 +79,14 @@ start() {
     fi
   fi
   mkdir -p $(dirname $JBOSS_CONSOLE_LOG)
-  chown jboss:jboss $(dirname $JBOSS_CONSOLE_LOG)
+  chown $JBOSS_USER:$JBOSS_USER $(dirname $JBOSS_CONSOLE_LOG)
+  touch $JBOSS_CONSOLE_LOG
+  chown $JBOSS_USER:$JBOSS_USER $JBOSS_CONSOLE_LOG
   cat /dev/null > $JBOSS_CONSOLE_LOG
 
   mkdir -p $(dirname $JBOSS_PIDFILE)
   chown $JBOSS_USER $(dirname $JBOSS_PIDFILE) || true
+
   #$CMD_PREFIX JBOSS_PIDFILE=$JBOSS_PIDFILE $JBOSS_SCRIPT 2>&1 > $JBOSS_CONSOLE_LOG &
   #$CMD_PREFIX JBOSS_PIDFILE=$JBOSS_PIDFILE $JBOSS_SCRIPT &
 

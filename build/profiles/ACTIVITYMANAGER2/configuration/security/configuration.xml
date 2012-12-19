@@ -20,9 +20,9 @@
                 <policy-module code="Delegating" flag="required"/>
             </authorization>
         </security-domain>
-        <security-domain name="plcd">
+        <security-domain name="custom">
             <authentication>
-                <login-module code="com.bosch.de.plcd.security.PLCDLoginModule" flag="required">
+                <login-module code="com.customer.custom.LoginModule" flag="required">
                     <module-option name="restore-login-identity" value="true"/>
                     <module-option name="multi-threaded" value="false"/>
                     <module-option name="password-stacking" value="useFirstPass"/>

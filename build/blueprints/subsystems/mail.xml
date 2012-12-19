@@ -1,5 +1,5 @@
 <subsystem xmlns="urn:jboss:domain:mail:1.0">
-    <mail-session jndi-name="${mail.jndi.name:java:jboss/mail/Default}" from="${mail.from:jboss.no-reply@rb-webapp40.de.bosch.com}">
+    <mail-session jndi-name="${mail.jndi.name:java:jboss/mail/Default}" from="${mail.from:jboss.no-reply@hostname.local}">
         <smtp-server outbound-socket-binding-ref="mail-smtp" />
     </mail-session>
 </subsystem>
