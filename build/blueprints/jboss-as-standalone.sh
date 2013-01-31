@@ -35,6 +35,10 @@ if [ -z "$JBOSS_CONSOLE_LOG" ]; then
   JBOSS_CONSOLE_LOG=/var/log/jboss-as/console.log
 fi
 
+if [ -z "$JBOSS_SERVER_LOG" ]; then
+  JBOSS_SERVER_LOG=/var/log/jboss-as/server.log
+fi
+
 if [ -z "$STARTUP_WAIT" ]; then
   STARTUP_WAIT=30
 fi
@@ -79,14 +83,11 @@ start() {
     fi
   fi
   mkdir -p $(dirname $JBOSS_CONSOLE_LOG)
-  chown $JBOSS_USER:$JBOSS_USER $(dirname $JBOSS_CONSOLE_LOG)
-  touch $JBOSS_CONSOLE_LOG
-  chown $JBOSS_USER:$JBOSS_USER $JBOSS_CONSOLE_LOG
+  chown jboss:jboss $(dirname $JBOSS_CONSOLE_LOG)
   cat /dev/null > $JBOSS_CONSOLE_LOG
 
   mkdir -p $(dirname $JBOSS_PIDFILE)
   chown $JBOSS_USER $(dirname $JBOSS_PIDFILE) || true
-
   #$CMD_PREFIX JBOSS_PIDFILE=$JBOSS_PIDFILE $JBOSS_SCRIPT 2>&1 > $JBOSS_CONSOLE_LOG &
   #$CMD_PREFIX JBOSS_PIDFILE=$JBOSS_PIDFILE $JBOSS_SCRIPT &
 
@@ -100,10 +101,20 @@ start() {
 
   count=0
   launched=false
+  skip_lines=0
+
+  if [ -f $JBOSS_SERVER_LOG ] ; then
+    skip_lines=$(cat $JBOSS_SERVER_LOG | wc -l)
+  fi
+
+  #echo "skipping $skip_lines lines of $JBOSS_SERVER_LOG"
+
+  sleep 2
 
   until [ $count -gt $STARTUP_WAIT ]
   do
-    grep 'JBoss AS.*started in' $JBOSS_CONSOLE_LOG > /dev/null 
+    tail -n+$skip_lines $JBOSS_SERVER_LOG | grep 'JBoss EAP.*started in' > /dev/null
+
     if [ $? -eq 0 ] ; then
       launched=true
       break
@@ -111,10 +122,16 @@ start() {
     sleep 1
     let count=$count+1;
   done
-  
-  success
-  echo
-  return 0
+
+  if [ $launched == true ] ; then
+    success
+    echo
+    return 0
+  else
+    failure
+    echo
+    return 1
+  fi
 }
 
 stop() {

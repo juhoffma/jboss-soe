@@ -125,6 +125,11 @@
             </fileset>
         </copy>
 
+        <!-- add the admin user to mgmt-user.properties -->
+        <concat append="true" destfile="${build.profile.dir}/${profile.name}/configuration/mgmt-users.properties">
+admin=c4a0708da43f76b6c75523548f23e937
+        </concat>
+
         <!-- Copy custom modules from the profile to the profile modules directory -->
         <copy todir="${build.profile.dir}/${profile.name}/modules">
             <!--suppress AntResolveInspection -->
@@ -272,7 +277,7 @@
         </copy>
 
         <!-- convert all line endings to unix format -->
-        <fixcrlf srcdir="${build.profile.dir}/${profile.name}" includes="**/*" eol="lf" />
+        <fixcrlf srcdir="${build.profile.dir}/${profile.name}" includes="**/*.xml,**/*.properties,**/*.sh,**/*.conf,**/*.txt"  eol="lf" />
 
         <!-- Before copying in the configuration overrides for each profile, we have to create the configuration
    by merging the blueprint subsystems, which contain the externalized content and the things that
@@ -344,7 +349,7 @@
 
     </target>
 
-    <target name="build-single" description="Creates a single RPM. Needs parameter (-Dprofile.dir=[profiles/ApplicationName])">
+    <target name="build-single" description="Creates a single RPM. Needs parameter (-Dprofile.dir=profiles/[ApplicationName])">
         <fail message="You have to define the profile directory when calling this script! -Dprofile.dir=[profiles/ApplicationName]" unless="profile.dir" />
         <antcall target="prepare-profile" inheritall="true" inheritrefs="true" />
     </target>
@@ -385,7 +390,7 @@
         </exec>
 
         <!-- Extract standalone.xml files and properties -->
-        <exec executable="bash">
+        <exec executable="/usr/local/bin/bash">
             <arg value="-c"/>
             <arg value="(cd ${build.checkout.dir} &amp;&amp; rpm2cpio ${config.files.rpm.pkg.name}*.rpm | cpio -ivd '*standalone*.xml' '*.properties')"/>
         </exec>

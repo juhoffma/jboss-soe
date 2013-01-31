@@ -1,5 +1,8 @@
-<subsystem xmlns="urn:jboss:domain:web:1.1" default-virtual-server="default-host" native="false">
-    <connector enable-lookups="false" enabled="true"
+<subsystem xmlns="urn:jboss:domain:web:1.2" default-virtual-server="default-host" native="false">
+    <configuration>
+	    <jsp-configuration x-powered-by="false"/>
+	</configuration>
+	<connector enable-lookups="false" enabled="true"
                executor="http-executor"
                max-connections="200"
                max-post-size="2048" max-save-post-size="4096"

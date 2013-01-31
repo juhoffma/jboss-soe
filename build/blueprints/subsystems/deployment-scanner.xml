@@ -1,6 +1,6 @@
 <subsystem xmlns="urn:jboss:domain:deployment-scanner:1.1">
     <deployment-scanner path="deployments" relative-to="jboss.server.base.dir"
-                        scan-interval="${hdscanner.scanPeriod:5000}"
+                        scan-interval="${hdscanner.scanPeriod:0}"
                         scan-enabled="true" auto-deploy-zipped="true"
                         auto-deploy-xml="true"
                         name="deployment-scanner"/>

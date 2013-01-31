@@ -1,4 +1,4 @@
-<driver name="jtds" module="net.sourceforge.jtds">
+<driver name="jtds" module="net.sourceforge.jtds" xmlns="urn:jboss:domain:datasources:1.1">
     <driver-class>net.sourceforge.jtds.jdbc.Driver</driver-class>
     <xa-datasource-class>net.sourceforge.jtds.jdbcx.JtdsDataSource</xa-datasource-class>
 </driver>
