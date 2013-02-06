@@ -1,5 +1,5 @@
 ##
-## RPM spec file to generate the jbossas RPM package for Bosch Platform Release 
+## RPM spec file to generate the jbossas RPM package for the Platform Release 
 ## This package provides base JBoss Enterprise Application Platform
 ##
 ## Author: Juergen Hoffmann <jhoffmann@redhat.com>
@@ -18,20 +18,20 @@
 %define pkg_includedir @PACKAGE_BASEDIR@
 
 #### Define user and group for the installed files.
-%define boschuser @RUNAS_USER@
-%define boschgroup @RUNAS_GROUP@
+%define user @RUNAS_USER@
+%define group @RUNAS_GROUP@
 
 Name:      %{pkg_name}
 Version:   %{pkg_version}
 Release:   %{pkg_release}
 Epoch:     0
-Summary:   Bosch Custom JBoss EAP Build
-Vendor:    Bosch
+Summary:   Custom JBoss EAP Build
+Vendor:    Red Hat
 BuildArch: x86_64
 Packager:  Juergen Hoffmann <jhoffmann@redhat.com>
 
 Group:     Internet/WWW/Servers
-License:   Bosch License
+License:   GPL v3
 URL:       http://support.redhat.com/
 Source0:   %{pkg_namesuffix}-%{projectName}.tar
 BuildRoot: %{_topdir}/buildroot/%{name}-%{version}
@@ -49,7 +49,7 @@ Requires: apr
 
 %description
 Base JBoss Enterprise Application Platform version %{version} 
-Software distribution for Bosch v@PACKAGE_VERSION@ Release
+Software distribution for the v@PACKAGE_VERSION@ Release
 
 %prep
 %setup -n %{projectName}
@@ -86,7 +86,7 @@ ln -s %{pkg_basedir}/jboss-as %{pkg_root}/jboss
 #### Files for main jbossas package.
 %files -f %{_tmppath}/jboss-eap-base.filelist
 %dir %{pkg_basedir}
-%defattr(-,%{boschuser},%{boschgroup},-)
+%defattr(-,%{user},%{group},-)
 
 %changelog
 * Thu Nov 08 2012 Juergen Hoffmann <jhoffmann@redhat.com> - 0:5.0.1-2

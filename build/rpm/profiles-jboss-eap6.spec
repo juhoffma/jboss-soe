@@ -1,6 +1,6 @@
 ##
 ## RPM spec file to generate the profile specific RPM packages for 
-## Bosch Platform Releases 
+## Platform Releases 
 ##
 ## Author: Juergen Hoffmann <jhoffmann@redhat.com>
 ##
@@ -23,20 +23,20 @@
 %define jboss_logs @JBOSS_LOG_DIR@/%{profile_name}/jboss-logs
 %define app_logs @APP_LOG_DIR@/%{profile_name}
 
-%define boschuser @RUNAS_USER@
-%define boschgroup @RUNAS_GROUP@
+%define user @RUNAS_USER@
+%define group @RUNAS_GROUP@
 
 Name:      %{pkg_name}
 Version:   %{pkg_version}
 Release:   %{pkg_release}
 Epoch:     0
-Summary:   Bosch Custom JBoss EAP Profile Build
-Vendor:	   Bosch
+Summary:   Custom JBoss EAP Profile Build
+Vendor:	   Red Hat
 BuildArch: noarch
 Packager:  Juergen Hoffmann <jhoffmann@redhat.com>
 
 Group:     Internet/WWW/Servers
-License:   Bosch License
+License:   GPLv3
 URL:       http://support.redhat.com/
 Source0:   %{profile_name}-%{projectName}.tar
 BuildRoot: %{_topdir}/buildroot/%{name}-%{version}
@@ -55,7 +55,7 @@ Provides: %{name} = %{version}
 Provides: jboss-eap6-%{profile_name}
 
 %description
-JBoss Enterprise Application Platform %{version} Software for Bosch.
+JBoss Enterprise Application Platform %{version} Software.
 This package contains a customized JBoss EAP %{version} Server Configuration Profile 
 that should be deployed on top of JBoss EAP %{version} package named jboss-eap-base.
 The name of profile provided by this package is : "@PROFILE_NAME@"
@@ -122,7 +122,7 @@ fi
 
 #### Files for the profile packages
 %files -f %{_tmppath}/profile.filelist
-%defattr(-,%{boschuser},%{boschgroup},-)
+%defattr(-,%{user},%{group},-)
 
 %changelog
 * Wed Nov 07 2012 Juergen Hoffmann <jhoffmann@redhat.com> - 0:5.0.1-1
