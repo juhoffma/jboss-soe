@@ -23,8 +23,8 @@
 %define jboss_logs @JBOSS_LOG_DIR@/%{profile_name}/jboss-logs
 %define app_logs @APP_LOG_DIR@/%{profile_name}
 
-%define user @RUNAS_USER@
-%define group @RUNAS_GROUP@
+%define runas_user @RUNAS_USER@
+%define runas_group @RUNAS_GROUP@
 
 Name:      %{pkg_name}
 Version:   %{pkg_version}
@@ -35,7 +35,7 @@ Vendor:	   Red Hat
 BuildArch: noarch
 Packager:  Juergen Hoffmann <jhoffmann@redhat.com>
 
-Group:     Internet/WWW/Servers
+Group:     Applications/Internet
 License:   GPLv3
 URL:       http://support.redhat.com/
 Source0:   %{profile_name}-%{projectName}.tar
@@ -78,10 +78,10 @@ find $RPM_BUILD_ROOT%{cfg_basedir} -type f | sed '{s#'${RPM_BUILD_ROOT}'##;}' | 
 
 %pre
 # Add the "jboss" user
-getent group jboss >/dev/null || groupadd -g 1547 -r jboss
-getent passwd jboss >/dev/null || \
-  /usr/sbin/useradd -r -u 24788 -g jboss -s /sbin/nologin \
-  -d %{cfg_basedir} -c "JBoss System user" jboss
+getent group %{runas_group} >/dev/null || groupadd -g 1547 -r %{runas_group}
+getent passwd %{runas_user} >/dev/null || \
+  /usr/sbin/useradd -r -u 1547 -g %{runas_group} -s /sbin/nologin \
+  -d %{cfg_basedir} -c "JBoss System user" %{runas_user}
 
 %post
 ## This condition is true during first installation of package.
@@ -93,7 +93,7 @@ if [ $1 -eq 1 ]; then
   ## Put a profile specific init symlink in /etc/init.d/
   chmod 755 %{cfg_basedir}/configuration/jboss_init_%{profile_name}
   ln -s %{cfg_basedir}/configuration/jboss_init_%{profile_name} /etc/init.d/jboss.%{profile_name}
-  chown -R jboss:jboss %{cfg_basedir}
+  chown -R %{runas_user}:%{runas_group} %{cfg_basedir}
 
   ## Enable profile startup at system boot.
   /sbin/chkconfig --add jboss.%{profile_name}
@@ -122,7 +122,7 @@ fi
 
 #### Files for the profile packages
 %files -f %{_tmppath}/profile.filelist
-%defattr(-,%{user},%{group},-)
+%defattr(-,%{runas_user},%{runas_group},-)
 
 %changelog
 * Wed Nov 07 2012 Juergen Hoffmann <jhoffmann@redhat.com> - 0:5.0.1-1

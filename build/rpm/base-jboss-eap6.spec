@@ -16,8 +16,8 @@
 %define pkg_basedir @INSTALL_PREFIX@
 
 #### Define user and group for the installed files.
-%define user @RUNAS_USER@
-%define group @RUNAS_GROUP@
+%define runas_user @RUNAS_USER@
+%define runas_group @RUNAS_GROUP@
 
 Name:      %{pkg_name}
 Version:   %{pkg_version}
@@ -28,7 +28,7 @@ Vendor:    Red Hat
 BuildArch: x86_64
 Packager:  Juergen Hoffmann <jhoffmann@redhat.com>
 
-Group:     Internet/WWW/Servers
+Group:     Applications/Internet
 License:   GPL v3
 URL:       http://support.redhat.com/
 Source0:   %{projectName}.tar
@@ -55,7 +55,7 @@ Software distribution for the v@PACKAGE_VERSION@ Release
 %install
 mkdir -p $RPM_BUILD_ROOT%{pkg_basedir}
 cp -r * $RPM_BUILD_ROOT%{pkg_basedir}
-%{__rm} -rf %{_tmppath}/profile.filelist
+%{__rm} -rf %{_tmppath}/jboss-eap-base.filelist
 find $RPM_BUILD_ROOT%{pkg_basedir} -type d | sed '{s#'${RPM_BUILD_ROOT}'##;}' | sed '{s#\(^.*$\)#%dir "\1"#g;}' >>%{_tmppath}/jboss-eap-base.filelist
 find $RPM_BUILD_ROOT%{pkg_basedir} -type f | sed '{s#'${RPM_BUILD_ROOT}'##;}' | sed '{s#\(^.*$\)#"\1"#g;}' >>%{_tmppath}/jboss-eap-base.filelist
 
@@ -63,6 +63,13 @@ find $RPM_BUILD_ROOT%{pkg_basedir} -type f | sed '{s#'${RPM_BUILD_ROOT}'##;}' | 
 if [ $1 = 0 ]; then
 	unlink %{pkg_root}/%{pkg_name}
 fi
+
+%pre
+# Add the "jboss" user
+getent group %{runas_group} >/dev/null || groupadd -g 1547 -r %{runas_group}
+getent passwd %{runas_user} >/dev/null || \
+  /usr/sbin/useradd -r -u 1547 -g %{runas_group} -s /sbin/nologin \
+  -d %{cfg_basedir} -c "JBoss System user" %{runas_user}
 
 %post
 
@@ -74,7 +81,7 @@ fi
 #### Files for main jbossas package.
 %files -f %{_tmppath}/jboss-eap-base.filelist
 %dir %{pkg_basedir}
-%defattr(-,%{user},%{group},-)
+%defattr(-,%{runas_user},%{runas_group},-)
 
 %changelog
 * Thu Nov 08 2012 Juergen Hoffmann <jhoffmann@redhat.com> - 0:5.0.1-2
