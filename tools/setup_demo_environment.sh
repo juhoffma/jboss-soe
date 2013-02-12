@@ -69,7 +69,9 @@ cp -a /tmp/jboss-soe/build /tmp/jboss-soe/tools /tmp/jboss-soe/doc trunk/jboss-s
 mv trunk/jboss-soe/build/build.properties.template trunk/jboss-soe/build/build.properties
 svn add trunk/
 svn --no-auth-cache commit --username test --password redhat -m "Initial checkin"
-rm /tmp/test
+
+# Getting rid of our prepared initial checkin directory and making sure that everything works from scratch
+rm -rf /tmp/test
 
 # Checkout our concrete working copy
 mkdir /tmp/svn-work
