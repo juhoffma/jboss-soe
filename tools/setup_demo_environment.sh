@@ -15,7 +15,7 @@ set -e
 # - make access to your local SVN Repository via Basic Auth
 
 # Install all necessary packages
-yum install git rpm-build subversion httpd java-1.6.0-openjdk-devel mod_dav_svn mc -y
+yum install git rpm-build subversion httpd java-1.6.0-openjdk-devel mod_dav_svn mc subversion-javahl -y
 
 # This is where we are going to keep the repo
 mkdir -p /var/local/svn
