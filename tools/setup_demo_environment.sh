@@ -78,5 +78,19 @@ mkdir /tmp/svn-work
 cd /tmp/svn-work
 svn --no-auth-cache --username test --password redhat checkout http://localhost/svn/test/trunk/jboss-soe/
 
-echo "Congratulations, Your working copy has been created in /tmp/svn-work"
-echo "You should start by editing your build.properties in /tmp/svn-work/jboss-soe/build"
+cat <<EOF
+Congratulations, Your working copy has been created in /tmp/svn-work
+You should start by editing your build.properties in /tmp/svn-work/jboss-soe/build
+You should at least set the following properties
+
+svn.repo.url=http://localhost/svn/test/trunk/jboss-soe
+svn.repo.user=test
+svn.repo.passwd=redhat
+
+build.root=/tmp/svn-build
+target.installation.directory=/opt
+
+NOTE!!!
+If you do not want to use the RHN Channels for the JBoss EAP6 Version you should download
+https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId=17633&product=appplatform
+EOF

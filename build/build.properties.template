@@ -77,7 +77,7 @@ profile.requires.upstream=jbossas-product-eap
 profile.requires.upstream.version= >= 7.1.2
 
 # The Specfile to use to generate the profile dependent RPM Files
-profile.specfile.name=profiles-jboss-eap6-6.0.0.spec
+profile.specfile.name=profiles-jboss-eap6.spec
 
 # The Package Name that contains the standalone{-full,-ha,-full-ha}.xml configuration files
 config.files.rpm.pkg.name=jbossas-standalone
@@ -88,7 +88,7 @@ config.files.rpm.pkg.name=jbossas-standalone
 
 # If this property is set, the build will ALWAYS checkout the configuration from subversion regardless of the upper
 # configuration, so use with care. You can use this property to maintain the master configuration files for yourself
-#master.revision.specfile.name=base-jboss-eap-${eap.version}.spec
+#master.revision.specfile.name=base-jboss-eap6.spec
 
 
 # -----------------------------------------------------------------------------
@@ -97,3 +97,8 @@ config.files.rpm.pkg.name=jbossas-standalone
 
 soe.java.home=/usr/lib/jvm/java-1.7.0-openjdk.x86_64
 
+# -----------------------------------------------------------------------------
+# Bash Configuration
+# -----------------------------------------------------------------------------
+
+bash=/bin/bash
