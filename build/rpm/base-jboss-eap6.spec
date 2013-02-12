@@ -14,7 +14,6 @@
 %define pkg_release @PACKAGE_RELEASE@
 %define pkg_root @INSTALL_ROOT@
 %define pkg_basedir @INSTALL_PREFIX@
-%define pkg_includedir @PACKAGE_BASEDIR@
 
 #### Define user and group for the installed files.
 %define user @RUNAS_USER@
@@ -54,11 +53,11 @@ Software distribution for the v@PACKAGE_VERSION@ Release
 %setup -n %{projectName}
 
 %install
-mkdir -p $RPM_BUILD_ROOT%{cfg_basedir}
-cp -r * $RPM_BUILD_ROOT%{cfg_basedir}
+mkdir -p $RPM_BUILD_ROOT%{pkg_basedir}
+cp -r * $RPM_BUILD_ROOT%{pkg_basedir}
 %{__rm} -rf %{_tmppath}/profile.filelist
-find $RPM_BUILD_ROOT%{cfg_basedir} -type d | sed '{s#'${RPM_BUILD_ROOT}'##;}' | sed '{s#\(^.*$\)#%dir "\1"#g;}' >>%{_tmppath}/jboss-eap-base.filelist
-find $RPM_BUILD_ROOT%{cfg_basedir} -type f | sed '{s#'${RPM_BUILD_ROOT}'##;}' | sed '{s#\(^.*$\)#"\1"#g;}' >>%{_tmppath}/jboss-eap-base.filelist
+find $RPM_BUILD_ROOT%{pkg_basedir} -type d | sed '{s#'${RPM_BUILD_ROOT}'##;}' | sed '{s#\(^.*$\)#%dir "\1"#g;}' >>%{_tmppath}/jboss-eap-base.filelist
+find $RPM_BUILD_ROOT%{pkg_basedir} -type f | sed '{s#'${RPM_BUILD_ROOT}'##;}' | sed '{s#\(^.*$\)#"\1"#g;}' >>%{_tmppath}/jboss-eap-base.filelist
 
 %preun
 if [ $1 = 0 ]; then
