@@ -390,7 +390,7 @@ admin=c4a0708da43f76b6c75523548f23e937
         </exec>
 
         <!-- Extract standalone.xml files and properties -->
-        <exec executable="/usr/local/bin/bash">
+        <exec executable="${bash}">
             <arg value="-c"/>
             <arg value="(cd ${build.checkout.dir} &amp;&amp; rpm2cpio ${config.files.rpm.pkg.name}*.rpm | cpio -ivd '*standalone*.xml' '*.properties')"/>
         </exec>
