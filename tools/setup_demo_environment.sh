@@ -62,19 +62,19 @@ htpasswd -b -c /etc/httpd/subversion_users test redhat
 
 # Create the initial checkin to the repository
 cd /tmp
-svn --username test --password redhat checkout http://localhost/svn/test
+svn --no-auth-cache --username test --password redhat checkout http://localhost/svn/test
 cd test/
 mkdir -p trunk/jboss-soe
 cp -a /tmp/jboss-soe/build /tmp/jboss-soe/tools /tmp/jboss-soe/doc trunk/jboss-soe
 mv trunk/jboss-soe/build/build.properties.template trunk/jboss-soe/build/build.properties
 svn add trunk/
-svn commit --username test --password redhat -m "Initial checkin"
+svn --no-auth-cache commit --username test --password redhat -m "Initial checkin"
 rm /tmp/test
 
 # Checkout our concrete working copy
 mkdir /tmp/svn-work
 cd /tmp/svn-work
-svn --username test --password redhat checkout http://localhost/svn/test/trunk/jboss-soe/
+svn --no-auth-cache --username test --password redhat checkout http://localhost/svn/test/trunk/jboss-soe/
 
 echo "Congratulations, Your working copy has been created in /tmp/svn-work"
 echo "You should start by editing your build.properties in /tmp/svn-work/build"
