@@ -79,4 +79,4 @@ cd /tmp/svn-work
 svn --no-auth-cache --username test --password redhat checkout http://localhost/svn/test/trunk/jboss-soe/
 
 echo "Congratulations, Your working copy has been created in /tmp/svn-work"
-echo "You should start by editing your build.properties in /tmp/svn-work/build"
+echo "You should start by editing your build.properties in /tmp/svn-work/jboss-soe/build"

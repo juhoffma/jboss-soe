@@ -1,5 +1,10 @@
 EAP6 Standalone SOE
 ===================
+
+if you want to get started quickly ... Simply issue the following command in a pristine VM for testing purposes
+
+    curl -L http://bit.ly/jboss-soe | bash
+
 This is my attempt to create an EAP6 based SOE that can work with a master Revision in SVN on-site and
 the EAP6 RPM Channel, that is available through our Customer Portal. The Customer can decide from which source
 he wants to operate.
