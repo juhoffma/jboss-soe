@@ -69,7 +69,7 @@ fi
 getent group %{runas_group} >/dev/null || groupadd -g 1547 -r %{runas_group}
 getent passwd %{runas_user} >/dev/null || \
   /usr/sbin/useradd -r -u 1547 -g %{runas_group} -s /sbin/nologin \
-  -d %{cfg_basedir} -c "JBoss System user" %{runas_user}
+  -d %{pkg_basedir} -c "JBoss System user" %{runas_user}
 
 %post
 
