@@ -8,7 +8,6 @@
 ## The tokenized variables with @@ are replaced by ant build script at runtime.
 ##
 %define projectName @RELEASE_NAME@
-%define pkg_namesuffix @PROFILE_NAME@
 
 %define pkg_name jboss-eap-base
 %define pkg_version @PACKAGE_VERSION@
@@ -33,7 +32,7 @@ Packager:  Juergen Hoffmann <jhoffmann@redhat.com>
 Group:     Internet/WWW/Servers
 License:   GPL v3
 URL:       http://support.redhat.com/
-Source0:   %{pkg_namesuffix}-%{projectName}.tar
+Source0:   %{projectName}.tar
 BuildRoot: %{_topdir}/buildroot/%{name}-%{version}
 
 ## Turn off for safety reasons.
@@ -55,28 +54,18 @@ Software distribution for the v@PACKAGE_VERSION@ Release
 %setup -n %{projectName}
 
 %install
-mkdir -p $RPM_BUILD_ROOT%{pkg_basedir}/jboss-as
-
-## Install base jboss-as directory
-## Copy / deploy / install the required files and directories
-cp -r jboss-as $RPM_BUILD_ROOT%{pkg_basedir}/
-%{__install} -d -m 0755 $RPM_BUILD_ROOT%{pkg_basedir}/jboss-as
-%{__rm} -rf %{_tmppath}/jboss-eap-base.filelist
-find $RPM_BUILD_ROOT%{pkg_basedir}/jboss-as -type d | sed '{s#'${RPM_BUILD_ROOT}'##;}' | sed '{s#\(^.*$\)#%dir "\1"#g;}' >>%{_tmppath}/jboss-eap-base.filelist
-find $RPM_BUILD_ROOT%{pkg_basedir}/jboss-as -type f | sed '{s#'${RPM_BUILD_ROOT}'##;}' | sed '{s#\(^.*$\)#"\1"#g;}' >>%{_tmppath}/jboss-eap-base.filelist
+mkdir -p $RPM_BUILD_ROOT%{cfg_basedir}
+cp -r * $RPM_BUILD_ROOT%{cfg_basedir}
+%{__rm} -rf %{_tmppath}/profile.filelist
+find $RPM_BUILD_ROOT%{cfg_basedir} -type d | sed '{s#'${RPM_BUILD_ROOT}'##;}' | sed '{s#\(^.*$\)#%dir "\1"#g;}' >>%{_tmppath}/jboss-eap-base.filelist
+find $RPM_BUILD_ROOT%{cfg_basedir} -type f | sed '{s#'${RPM_BUILD_ROOT}'##;}' | sed '{s#\(^.*$\)#"\1"#g;}' >>%{_tmppath}/jboss-eap-base.filelist
 
 %preun
 if [ $1 = 0 ]; then
-	unlink %{pkg_root}/jboss
+	unlink %{pkg_root}/%{pkg_name}
 fi
 
 %post
-chmod 0755 $RPM_BUILD_ROOT%{pkg_basedir}/jboss-as/bin/*.sh
-## symbolic link to jboss-as
-if [ -h %{pkg_root}/jboss ]; then
-	unlink %{pkg_root}/jboss
-fi
-ln -s %{pkg_basedir}/jboss-as %{pkg_root}/jboss
 
 %clean
 # Clean up the RPM build root directory.
@@ -90,7 +79,4 @@ ln -s %{pkg_basedir}/jboss-as %{pkg_root}/jboss
 
 %changelog
 * Thu Nov 08 2012 Juergen Hoffmann <jhoffmann@redhat.com> - 0:5.0.1-2
-- initial RPM spec file
-
-* Mon Aug 01 2011 Torben Jaeger <torben@redhat.com> - 0:5.0.1-1
 - initial RPM spec file
