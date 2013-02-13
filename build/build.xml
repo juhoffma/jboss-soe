@@ -38,6 +38,15 @@
              classpathref="path.svnant"
             />
 
+    <if>
+        <isset property="master.revision.specfile.name" />
+        <then>
+            <property name="jboss.home" value="${target.jboss.home.directory}" />
+        </then>
+        <else>
+            <property name="jboss.home" value="/usr/share/jbossas" />
+        </else>
+    </if>
     <svnSetting id="svn.settings" username="${svn.repo.user}" password="${svn.repo.passwd}" javahl="true"/>
 
     <property name="master.revision.name" value="jboss-eap-${major.version}.${minor.version}"/>
@@ -273,6 +282,7 @@ admin=c4a0708da43f76b6c75523548f23e937
             <filterset>
                 <filter token="RUN_AS_USER" value="${runas.user}"/>
                 <filter token="PROFILE_DIR" value="${eap.profile.directory}/${profile.name}"/>
+                <filter token="JBOSS_HOME" value="${jboss.home}"/>
             </filterset>
         </copy>
 
@@ -365,7 +375,7 @@ admin=c4a0708da43f76b6c75523548f23e937
                         <filter token="RELEASE_NAME" value="${master.revision.name}"/>
                         <filter token="PACKAGE_VERSION" value="${major.version}.${minor.version}"/>
                         <filter token="PACKAGE_RELEASE" value="${release.number}"/>
-                        <filter token="PROFILE_NAME" value="${profile.name}"/>
+                        <filter token="PACKAGE_NAME" value="${profile.requires.upstream}"/>
                         <filter token="INSTALL_ROOT" value="${target.installation.directory}"/>
                         <filter token="INSTALL_PREFIX" value="${target.jboss.home.directory}"/>
                         <filter token="CONFIG_BASEDIR" value="${eap.profile.directory}"/>
@@ -388,6 +398,14 @@ admin=c4a0708da43f76b6c75523548f23e937
         <rpm specFile="${master.revision.name}.spec" topDir="${build.rpm.dir}"
              cleanBuildDir="true" removeSpec="true" failOnError="true"
              command="-bb"/>
+
+        <!-- The RPM is built, let us move it to where it belongs -->
+        <move todir="${release.files.dir}">
+            <fileset dir="${build.rpm.dir}/RPMS/">
+                <include name="**/*${profile.requires.upstream}*.rpm"/>
+            </fileset>
+        </move>
+
         <property name="base.rpm.built" value="true"/>
     </target>
 

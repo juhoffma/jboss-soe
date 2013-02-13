@@ -123,7 +123,7 @@ and uncomment the option
 and comment
 
 profile.requires.upstream=jbossas-product-eap
-profile.requires.upstream.version= >= 7.1.2
+profile.requires.upstream.version=7.1.2
 
 
 EOF

@@ -9,7 +9,7 @@
 ##
 %define projectName @RELEASE_NAME@
 
-%define pkg_name jboss-eap-base
+%define pkg_name @PACKAGE_NAME@
 %define pkg_version @PACKAGE_VERSION@
 %define pkg_release @PACKAGE_RELEASE@
 %define pkg_root @INSTALL_ROOT@
@@ -72,7 +72,15 @@ getent passwd %{runas_user} >/dev/null || \
   -d %{pkg_basedir} -c "JBoss System user" %{runas_user}
 
 %post
+## This condition is true during first installation of package.
+if [ $1 -eq 1 ]; then
 
+  ## Put a profile specific init symlink in /etc/init.d/
+  chmod 755 %{pkg_basedir}/bin/standalone.sh
+  chmod 755 %{pkg_basedir}/bin/domain.sh
+  chown -R %{runas_user}:%{runas_group} %{pkg_basedir}
+
+fi
 %clean
 # Clean up the RPM build root directory.
 %{__rm} -rf $RPM_BUILD_ROOT

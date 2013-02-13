@@ -92,7 +92,7 @@ start() {
   #$CMD_PREFIX JBOSS_PIDFILE=$JBOSS_PIDFILE $JBOSS_SCRIPT &
 
   if [ ! -z "$JBOSS_USER" ]; then
-    if [ -x /etc/rc.d/init.d/functions ]; then
+    if [ -e /etc/rc.d/init.d/functions ]; then
       daemon --user $JBOSS_USER LAUNCH_JBOSS_IN_BACKGROUND=1 JBOSS_MODULEPATH=$JBOSS_MODULEPATH JBOSS_BASE_DIR=$JBOSS_BASE_DIR RUN_CONF=$RUN_CONF JBOSS_PIDFILE=$JBOSS_PIDFILE $JBOSS_SCRIPT -c $JBOSS_CONFIG -P $JBOSS_BASE_DIR/configuration/jboss.properties -P $JBOSS_BASE_DIR/configuration/custom.properties 2>&1 > $JBOSS_CONSOLE_LOG &
     else
       su - $JBOSS_USER -c "LAUNCH_JBOSS_IN_BACKGROUND=1 JBOSS_MODULEPATH=$JBOSS_MODULEPATH JBOSS_BASE_DIR=$JBOSS_BASE_DIR RUN_CONF=$RUN_CONF JBOSS_PIDFILE=$JBOSS_PIDFILE $JBOSS_SCRIPT -c $JBOSS_CONFIG -P $JBOSS_BASE_DIR/configuration/jboss.properties -P $JBOSS_BASE_DIR/configuration/custom.properties" 2>&1 > $JBOSS_CONSOLE_LOG &

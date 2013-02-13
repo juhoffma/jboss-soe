@@ -74,7 +74,7 @@ signed.rpms=true
 
 # Use the official RHN Channel as upstream provider
 profile.requires.upstream=jbossas-product-eap
-profile.requires.upstream.version= >= 7.1.2
+profile.requires.upstream.version=7.1.2
 
 # The Specfile to use to generate the profile dependent RPM Files
 profile.specfile.name=profiles-jboss-eap6.spec

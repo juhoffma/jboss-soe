@@ -46,7 +46,7 @@ AutoReq: off
 ## This is requirement for building the RPM package.
 BuildRequires: rpm-build
 
-Requires: @UPSTREAM_RELEASE@ @UPSTREAM_RELEASE_VERSION@
+Requires: @UPSTREAM_RELEASE@ >= @UPSTREAM_RELEASE_VERSION@
 
 # Do not provide too much stuff and screw up other dependencies
 AutoProv: off
