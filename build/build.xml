@@ -359,7 +359,13 @@ admin=c4a0708da43f76b6c75523548f23e937
             </else>
         </if>
 
-        <antcall target="build-base-rpm" inheritall="true" inheritrefs="true" />
+        <if>
+            <isset property="master.revision.specfile.name" />
+            <then>
+                <antcall target="build-base-rpm" inheritall="true" inheritrefs="true" />
+            </then>
+        </if>
+
     </target>
 
     <target name="build-base-rpm" unless="base.rpm.built">

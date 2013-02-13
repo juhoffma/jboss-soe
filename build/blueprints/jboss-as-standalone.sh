@@ -62,7 +62,7 @@ prog='jboss-as'
 CMD_PREFIX=''
 
 if [ ! -z "$JBOSS_USER" ]; then
-  if [ -x /etc/rc.d/init.d/functions ]; then
+  if [ -e /etc/rc.d/init.d/functions ]; then
     CMD_PREFIX="daemon --user $JBOSS_USER"
   else
     CMD_PREFIX="su - $JBOSS_USER -c"

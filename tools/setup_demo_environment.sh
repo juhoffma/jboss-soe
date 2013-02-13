@@ -15,7 +15,7 @@ set -e
 # - make access to your local SVN Repository via Basic Auth
 
 # Install all necessary packages
-yum install git rpm-build subversion httpd java-1.6.0-openjdk-devel mod_dav_svn mc subversion-javahl -y
+yum install git rpm-build subversion httpd java-1.6.0-openjdk-devel mod_dav_svn mc subversion-javahl dialog expect rhnpush -y
 
 # This is where we are going to keep the repo
 mkdir -p /var/local/svn
@@ -91,6 +91,7 @@ svn.repo.passwd=redhat
 
 build.root=/tmp/svn-build
 target.installation.directory=/opt
+release.files.rootdir=/tmp
 
 NOTE!!!
 If you do not want to use the RHN Channels for the JBoss EAP6 Version you should download
