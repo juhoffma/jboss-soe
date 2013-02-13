@@ -67,6 +67,7 @@ The name of profile provided by this package is : "@PROFILE_NAME@"
 mkdir -p $RPM_BUILD_ROOT%{cfg_basedir}
 cp -r * $RPM_BUILD_ROOT%{cfg_basedir}
 mkdir -p $RPM_BUILD_ROOT%{cfg_basedir}/log
+touch $RPM_BUILD_ROOT%{cfg_basedir}/log/server.log
 %{__rm} -rf %{_tmppath}/profile.filelist
 find $RPM_BUILD_ROOT%{cfg_basedir} -type d | sed '{s#'${RPM_BUILD_ROOT}'##;}' | sed '{s#\(^.*$\)#%dir "\1"#g;}' >>%{_tmppath}/profile.filelist
 find $RPM_BUILD_ROOT%{cfg_basedir} -type f | sed '{s#'${RPM_BUILD_ROOT}'##;}' | sed '{s#\(^.*$\)#"\1"#g;}' >>%{_tmppath}/profile.filelist

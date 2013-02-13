@@ -61,8 +61,9 @@ find $RPM_BUILD_ROOT%{pkg_basedir} -type f | sed '{s#'${RPM_BUILD_ROOT}'##;}' | 
 
 %preun
 if [ $1 = 0 ]; then
-	unlink %{pkg_root}/%{pkg_name}
+  rm -rf %{pkg_basedir}
 fi
+
 
 %pre
 # Add the "jboss" user
