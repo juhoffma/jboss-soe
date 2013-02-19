@@ -529,18 +529,25 @@ admin=c4a0708da43f76b6c75523548f23e937
     </target>
 
     <target name="merge-default-standalone-xml">
+
+        <foreach target="merge-default-subsystems" param="subsystem.file.name" inheritall="true" inheritrefs="true">
+            <path>
+                <fileset dir="${basedir}/blueprints/subsystems">
+                    <include name="*.xml"/>
+                </fileset>
+            </path>
+        </foreach>
+        <foreach target="merge-default-other" param="other.file.name" inheritall="true" inheritrefs="true">
+            <path>
+                <fileset dir="${basedir}/blueprints/other">
+                    <include name="*.xml"/>
+                </fileset>
+            </path>
+        </foreach>
         <!-- Let us process the copied standalone.xml and insert the stuff from the configuration directories-->
         <xmltask source="${build.profile.dir}/${profile.name}/configuration/standalone.xml"
                  dest="${build.profile.dir}/${profile.name}/configuration/standalone-parsed.xml">
 
-            <!--
-            <replace path="//*[contains(namespace-uri(), 'deployment-scanner') and local-name()='subsystem']" withfile="${basedir}/blueprints/subsystems/deployment-scanner.xml" />
-            <replace path="//*[contains(namespace-uri(), 'logging') and local-name()='subsystem']" withfile="${basedir}/blueprints/subsystems/logging.xml" />
-            <replace path="//*[contains(namespace-uri(), 'mail') and local-name()='subsystem']" withfile="${basedir}/blueprints/subsystems/mail.xml" />
-            <replace path="//*[contains(namespace-uri(), 'threads') and local-name()='subsystem']" withfile="${basedir}/blueprints/subsystems/threads.xml" />
-            <replace path="//*[contains(namespace-uri(), 'web:') and local-name()='subsystem']" withfile="${basedir}/blueprints/subsystems/web.xml" />
-            -->
-            <replace path="//*[local-name()='socket-binding-group']" withfile="${basedir}/blueprints/other/socket-binding-group.xml" />
             <remove  path="//*[local-name()='datasource']" />
             <remove  path="//*[local-name()='driver' and @module='com.h2database.h2']" />
 
@@ -552,6 +559,40 @@ admin=c4a0708da43f76b6c75523548f23e937
 
         <move file="${build.profile.dir}/${profile.name}/configuration/standalone-parsed.xml"
               tofile="${build.profile.dir}/${profile.name}/configuration/standalone.xml" />
+    </target>
+
+    <target name="merge-default-subsystems">
+        <basename property="local.subsystem.file.name" file="${subsystem.file.name}"/>
+        <propertyregex property="merge.subsystem.name"
+                       input="${local.subsystem.file.name}"
+                       regexp="([^\.]*)\.xml"
+                       select="\1"
+                       casesensitive="false" />
+        <xmltask source="${build.profile.dir}/${profile.name}/configuration/standalone.xml"
+                 dest="${build.profile.dir}/${profile.name}/configuration/standalone-parsed.xml">
+
+        <replace path="//*[contains(namespace-uri(), '${merge.subsystem.name}') and local-name()='subsystem']" withfile="${basedir}/blueprints/subsystems/${local.subsystem.file.name}" />
+        </xmltask>
+        <move file="${build.profile.dir}/${profile.name}/configuration/standalone-parsed.xml"
+              tofile="${build.profile.dir}/${profile.name}/configuration/standalone.xml" />
+
+    </target>
+
+    <target name="merge-default-other">
+        <basename property="local.other.file.name" file="${other.file.name}"/>
+        <propertyregex property="merge.other.name"
+                       input="${local.other.file.name}"
+                       regexp="([^\.]*)\.xml"
+                       select="\1"
+                       casesensitive="false" />
+        <xmltask source="${build.profile.dir}/${profile.name}/configuration/standalone.xml"
+                 dest="${build.profile.dir}/${profile.name}/configuration/standalone-parsed.xml">
+
+            <replace path="//*[local-name()='${merge.other.name}']" withfile="${basedir}/blueprints/other/${local.other.file.name}" />
+        </xmltask>
+        <move file="${build.profile.dir}/${profile.name}/configuration/standalone-parsed.xml"
+              tofile="${build.profile.dir}/${profile.name}/configuration/standalone.xml" />
+
     </target>
 
 </project>
