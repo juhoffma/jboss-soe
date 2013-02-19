@@ -18,6 +18,8 @@
 #### Define user and group for the installed files.
 %define runas_user @RUNAS_USER@
 %define runas_group @RUNAS_GROUP@
+%define runas_user_uid @RUNAS_USER_UID@
+%define runas_group_gid @RUNAS_GROUP_GID@
 
 Name:      %{pkg_name}
 Version:   %{pkg_version}
@@ -67,9 +69,9 @@ fi
 
 %pre
 # Add the "jboss" user
-getent group %{runas_group} >/dev/null || groupadd -g 1547 -r %{runas_group}
+getent group %{runas_group} >/dev/null || groupadd -g %{runas_group_gid} -r %{runas_group}
 getent passwd %{runas_user} >/dev/null || \
-  /usr/sbin/useradd -r -u 1547 -g %{runas_group} -s /sbin/nologin \
+  /usr/sbin/useradd -r -u %{runas_user_uid} -g %{runas_group} -s /sbin/nologin \
   -d %{pkg_basedir} -c "JBoss System user" %{runas_user}
 
 %post

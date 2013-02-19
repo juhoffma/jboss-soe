@@ -56,6 +56,10 @@ common.app.log.dir=${target.installation.directory}/jboss-logs
 # The contents of the RPM Package will be chowned to this user and group
 runas.user=jboss
 runas.group=jboss
+# If you want a per profile user configuration you have to enable the following property and set it to true
+# the default is false. Then you have to configure the file user and group with the user and the group
+# as its content
+# user.per.profile=true
 
 jboss.log.dir=${eap.profile.directory}
 
