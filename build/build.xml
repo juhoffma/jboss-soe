@@ -254,7 +254,6 @@ admin=c4a0708da43f76b6c75523548f23e937
                         <property name="profile.user.gid" value="1547" />
                     </else>
                 </if>
-                <loadfile property="profile.group.gid" srcFile="${profile.dir}/properties/gid"/>
             </then>
             <else>
                 <property name="profile.user" value="${runas.user}" />
