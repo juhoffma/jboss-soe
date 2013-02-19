@@ -232,7 +232,7 @@ admin=c4a0708da43f76b6c75523548f23e937
         <!-- and define two files under profile/properties/{user,group}. The files must contain the -->
         <!-- effective user and group on a single line -->
         <if>
-            <istrue property="user.per.profile" value="true" />
+            <istrue value="${user.per.profile}" />
             <then>
                 <loadfile property="profile.user" srcFile="${profile.dir}/properties/user"/>
                 <loadfile property="profile.group" srcFile="${profile.dir}/properties/group"/>
@@ -532,6 +532,7 @@ admin=c4a0708da43f76b6c75523548f23e937
         <!-- Let us process the copied standalone.xml and insert the stuff from the configuration directories-->
         <xmltask source="${build.profile.dir}/${profile.name}/configuration/standalone.xml"
                  dest="${build.profile.dir}/${profile.name}/configuration/standalone-parsed.xml">
+
             <!--
             <replace path="//*[contains(namespace-uri(), 'deployment-scanner') and local-name()='subsystem']" withfile="${basedir}/blueprints/subsystems/deployment-scanner.xml" />
             <replace path="//*[contains(namespace-uri(), 'logging') and local-name()='subsystem']" withfile="${basedir}/blueprints/subsystems/logging.xml" />
