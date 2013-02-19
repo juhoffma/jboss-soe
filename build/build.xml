@@ -532,11 +532,13 @@ admin=c4a0708da43f76b6c75523548f23e937
         <!-- Let us process the copied standalone.xml and insert the stuff from the configuration directories-->
         <xmltask source="${build.profile.dir}/${profile.name}/configuration/standalone.xml"
                  dest="${build.profile.dir}/${profile.name}/configuration/standalone-parsed.xml">
+            <!--
             <replace path="//*[contains(namespace-uri(), 'deployment-scanner') and local-name()='subsystem']" withfile="${basedir}/blueprints/subsystems/deployment-scanner.xml" />
             <replace path="//*[contains(namespace-uri(), 'logging') and local-name()='subsystem']" withfile="${basedir}/blueprints/subsystems/logging.xml" />
             <replace path="//*[contains(namespace-uri(), 'mail') and local-name()='subsystem']" withfile="${basedir}/blueprints/subsystems/mail.xml" />
             <replace path="//*[contains(namespace-uri(), 'threads') and local-name()='subsystem']" withfile="${basedir}/blueprints/subsystems/threads.xml" />
             <replace path="//*[contains(namespace-uri(), 'web:') and local-name()='subsystem']" withfile="${basedir}/blueprints/subsystems/web.xml" />
+            -->
             <replace path="//*[local-name()='socket-binding-group']" withfile="${basedir}/blueprints/other/socket-binding-group.xml" />
             <remove  path="//*[local-name()='datasource']" />
             <remove  path="//*[local-name()='driver' and @module='com.h2database.h2']" />
