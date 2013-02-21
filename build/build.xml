@@ -587,7 +587,7 @@ admin=c4a0708da43f76b6c75523548f23e937
         <xmltask source="${build.profile.dir}/${profile.name}/configuration/standalone.xml"
                  dest="${build.profile.dir}/${profile.name}/configuration/standalone-parsed.xml">
 
-            <replace path="//*[local-name()=':${merge.other.name}:']" withfile="${basedir}/blueprints/other/${local.other.file.name}" />
+            <replace path="//*[local-name()='${merge.other.name}']" withfile="${basedir}/blueprints/other/${local.other.file.name}" />
         </xmltask>
         <move file="${build.profile.dir}/${profile.name}/configuration/standalone-parsed.xml"
               tofile="${build.profile.dir}/${profile.name}/configuration/standalone.xml" />
