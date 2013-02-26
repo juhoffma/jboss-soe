@@ -103,7 +103,7 @@ if [ $1 -eq 1 ]; then
 
   ## Create the /data/jboss-logs/%{profile_name} directory
   mkdir -p /data/jboss-logs/%{profile_name}
-  chown jboss:jboss /data/jboss-logs/%{profile_name}
+  chown %{runas_user}:%{runas_group} /data/jboss-logs/%{profile_name}
 fi
 
 ## This condition is true if this is last un-install of package.
@@ -125,9 +125,13 @@ fi
 
 #### Files for the profile packages
 %files -f %{_tmppath}/profile.filelist
+%config(noreplace)%{cfg_basedir}/configuration/jboss_%{profile_name}_sysconfig
 %defattr(-,%{runas_user},%{runas_group},-)
 
 %changelog
+* Tue Feb 26 2013 Benjamin Kruell <bkruell@redhat.com> - 0:6.0.1-1
+- profile sysconfig file flagged as config noreplace
+
 * Wed Nov 07 2012 Juergen Hoffmann <jhoffmann@redhat.com> - 0:5.0.1-1
 - initial RPM spec file
 
