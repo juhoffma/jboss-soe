@@ -5,6 +5,9 @@ if you want to get started quickly ... Simply issue the following command in a p
 
     curl -L http://bit.ly/jboss-soe | bash
 
+if you want to find out more what is going to happen after issuing this command, you should watch the
+introduction video https://vimeo.com/60582511
+
 This is my attempt to create an EAP6 based SOE that can work with a master Revision in SVN on-site and
 the EAP6 RPM Channel, that is available through our Customer Portal. The Customer can decide from which source
 he wants to operate.
@@ -31,7 +34,7 @@ doc
 ---
 This Directory contains a general README with instructions on how to use the files in the build directory
 
-jboss-eap-master
+jboss-eap6-master
 ----------------
 Self explanatory... This is the JBoss EAP 6.0.0 Master Revision. This Repository is only used to build the base RPM
 Package, and provides the default standalone.xml, standalone-ha.xml, standalone-full.xml, standalone-full-ha.xml. This
