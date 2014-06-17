@@ -55,6 +55,10 @@ if [ -z "$JBOSS_USER" ]; then
   JBOSS_USER=jboss
 fi
 
+if [ -z "$JBOSS_GROUP" ]; then
+  JBOSS_GROUP=jboss
+fi
+
 JBOSS_SCRIPT=$JBOSS_HOME/bin/standalone.sh
 
 prog='jboss-as'
@@ -83,7 +87,7 @@ start() {
     fi
   fi
   mkdir -p $(dirname $JBOSS_CONSOLE_LOG)
-  chown jboss:jboss $(dirname $JBOSS_CONSOLE_LOG)
+  chown ${JBOSS_USER}:${JBOSS_GROUP} $(dirname $JBOSS_CONSOLE_LOG)
   cat /dev/null > $JBOSS_CONSOLE_LOG
 
   mkdir -p $(dirname $JBOSS_PIDFILE)
